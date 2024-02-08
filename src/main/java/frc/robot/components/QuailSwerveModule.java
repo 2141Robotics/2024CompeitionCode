@@ -1,19 +1,16 @@
 package frc.robot.components;
 
-import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
-import com.ctre.phoenix6.signals.SensorDirectionValue;
-
-import com.ctre.phoenix6.configs.MagnetSensorConfigs;
-import com.ctre.phoenix6.configs.Slot0Configs;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.PositionDutyCycle;
-import com.ctre.phoenix6.hardware.CANcoder;
-
 import frc.robot.math.Constants;
 
 import com.mineinjava.quail.SwerveModuleBase;
 import com.mineinjava.quail.util.geometry.Vec2d;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.SparkPIDController;
+import com.revrobotics.CANSparkBase.IdleMode;
+import com.revrobotics.CANSparkLowLevel.MotorType;
+
+import edu.wpi.first.wpilibj.AnalogEncoder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * Container for one swerve module. Wraps two falcon500s: one for driving and one for steering.
@@ -24,14 +21,21 @@ public class QuailSwerveModule extends SwerveModuleBase
 {
 	/** The PID id used to determine what PID settings to use. */
 	/** The motor controlling the module's movement. */
-	public final TalonFX drivingMotor;
+	public final CANSparkMax drivingMotor;
 	/** The motor controlling the module's rotation. */
-	public final TalonFX steeringMotor;
+	public final CANSparkMax steeringMotor;
 	/** The can coder measuring the module's absolute rotaiton. */
-	private final CANcoder canCoder;
+	private final AnalogEncoder analogEncoder;
 	/** The can coder's rotational offset. This value must be manually set through phoenix tuner. */
-	public final double canOffset;
 	
+	public SparkPIDController pidController;
+
+	public final double analogEncoderID;
+	public final double analogEncoderOffset;
+	
+	public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput;
+
+
 	/**
 	 * @param driveMotor driving motor ID
 	 * @param steeringMotor steering motor ID
@@ -40,13 +44,15 @@ public class QuailSwerveModule extends SwerveModuleBase
 	 * @param canCoderOffset the can coder's rotational offset
 	 */
 
-	public QuailSwerveModule(Vec2d position, int driveMotorID, int steeringMotorID, int canCoderID, double canCoderOffset)
+	public QuailSwerveModule(Vec2d position, int driveMotorID, int steeringMotorID, int analogEncoderID, double analogEncoderOffset)
 	{
 		super(position, Constants.steeringRatio, Constants.driveRatio, true);
-		this.drivingMotor = new TalonFX(driveMotorID);
-		this.steeringMotor = new TalonFX(steeringMotorID);
-		this.canCoder = new CANcoder(canCoderID);
-		this.canOffset = canCoderOffset;
+		this.drivingMotor = new CANSparkMax(driveMotorID, MotorType.kBrushless);
+		this.steeringMotor = new CANSparkMax(steeringMotorID, MotorType.kBrushless);
+		this.analogEncoder = new AnalogEncoder(analogEncoderID);
+		System.out.println("|||||||||" + analogEncoderID + "|||||||||");
+		this.analogEncoderOffset = analogEncoderOffset;
+		this.analogEncoderID = analogEncoderID;
 	}
 	
 	/**
@@ -54,47 +60,41 @@ public class QuailSwerveModule extends SwerveModuleBase
 	 */
 	public void init()
 	{
-		// Reset the steering motor.
-		
-		this.steeringMotor.getConfigurator().apply(new TalonFXConfiguration());
-		this.drivingMotor.getConfigurator().apply(new TalonFXConfiguration());
-		MagnetSensorConfigs encoderConfig = new MagnetSensorConfigs();
-		encoderConfig.AbsoluteSensorRange = AbsoluteSensorRangeValue.Unsigned_0To1;
-		encoderConfig.MagnetOffset = this.canOffset;
-		encoderConfig.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
+		this.steeringMotor.restoreFactoryDefaults();
+		this.pidController = this.steeringMotor.getPIDController();
 
+		kP = 0.4;
+		kI = 0.01;
+		kD = 0.00;
+		kIz = 0;
+		kFF = 0.000;
+		kMaxOutput = 1;
+		kMinOutput = -1;
 
-		this.canCoder.getConfigurator().apply(encoderConfig);
-		// Miscellaneous settings.
-		this.steeringMotor.setInverted(true);
-		this.drivingMotor.setInverted(true);
-		
-		
-		var slot0Configs = new Slot0Configs();
-		slot0Configs.kS = 0.0; // Add 0.25 V output to overcome static friction
-		slot0Configs.kA = 0.00; // An acceleration of 1 rps/s requires 0.01 V output
-		slot0Configs.kV = Constants.PID_SETTINGS[0];
-		slot0Configs.kP = Constants.PID_SETTINGS[1];
-		slot0Configs.kI = Constants.PID_SETTINGS[2];
-		slot0Configs.kD = Constants.PID_SETTINGS[3];
-		var talonFXConfigs = new TalonFXConfiguration();
+		pidController.setP(kP);
+    	pidController.setI(kI);
+    	pidController.setD(kD);
+    	pidController.setIZone(kIz);
+    	pidController.setFF(kFF);
+    	pidController.setOutputRange(kMinOutput, kMaxOutput);
+		this.steeringMotor.setInverted(false);
+		this.steeringMotor.setIdleMode(IdleMode.kBrake);
 
-		var motionMagicConfigs = talonFXConfigs.MotionMagic;
-		motionMagicConfigs.MotionMagicCruiseVelocity = 80; // Target cruise velocity of 80 rps
-		motionMagicConfigs.MotionMagicAcceleration = 160; // Target acceleration of 160 rps/s (0.5 seconds)
-		motionMagicConfigs.MotionMagicJerk = 1600; // Target jerk of 1600 rps/s/s (0.1 seconds)
-
-		this.steeringMotor.getConfigurator().apply(talonFXConfigs);
-	
-		// PID tune the steering motor.
-
-		this.steeringMotor.getConfigurator().apply(slot0Configs);
+		this.steeringMotor.burnFlash();
 
     	System.out.println("done config");
 
 		// Reset the motor rotations.
 		this.reset();
-		
+	}
+
+	// returns rotations, 0 is x axis
+	public double getAbsoluteEncoderAngle() {
+		double currentPos = this.analogEncoder.getAbsolutePosition() - this.analogEncoderOffset;
+
+		currentPos = (currentPos + 1) % 1;
+
+		return currentPos;
 	}
 
 	/**
@@ -103,6 +103,12 @@ public class QuailSwerveModule extends SwerveModuleBase
 	public void reset()
 	{
 		System.out.println("RESET");
+		
+		this.steeringMotor.getEncoder().setPosition(getAbsoluteEncoderAngle() * Constants.steeringRatio);
+		this.currentAngle = (getAbsoluteEncoderAngle() * Constants.TWO_PI);
+		this.setAngle(0);
+		
+		/* 
 		// Set the steering motor's internal rotation to 0.
 		double currentPos = this.canCoder.getAbsolutePosition().refresh().getValue();
 		// The angle to rotate to face forward.
@@ -110,16 +116,20 @@ public class QuailSwerveModule extends SwerveModuleBase
 		// Set the steering motor's rotation.
 		this.steeringMotor.setPosition(angleToRotate * 12.8);
 		this.currentAngle = angleToRotate * Constants.TWO_PI;
+		*/
 	}
 
 	public Vec2d getCurrentMovement() {
-		double angle = this.canCoder.getAbsolutePosition().refresh().getValue() * (2 * Math.PI);
-		double velocity = this.drivingMotor.getVelocity().refresh().getValue();
-		double rotationsPerSecond = velocity / 6.75;
-		double inchesPerSecond = rotationsPerSecond * 4 * Math.PI;
+		return new Vec2d();
+	}
 
-		return new Vec2d(angle, inchesPerSecond, false);
-	
+	public AnalogEncoder getEncoder() {
+		return this.analogEncoder;
+	}
+
+	public void putEncoderDash() {
+		SmartDashboard.putNumber("Encoder value " + this.analogEncoderID, this.getAbsoluteEncoderAngle());
+		SmartDashboard.putNumber("Motor value " + this.analogEncoderID, this.steeringMotor.getEncoder().getPosition() / 12.8);
 	}
 	
 	
@@ -131,7 +141,7 @@ public class QuailSwerveModule extends SwerveModuleBase
 			return;
 		}
 
-		this.steeringMotor.setControl(new PositionDutyCycle(angle * 12.8 / Constants.TWO_PI));
+		this.steeringMotor.getPIDController().setReference((angle/(2*Math.PI)) * 12.8, CANSparkMax.ControlType.kPosition);
 	}
 
 	@Override
@@ -144,7 +154,7 @@ public class QuailSwerveModule extends SwerveModuleBase
 	 * 
 	 * @return The drive motor
 	 */
-     	public TalonFX getDriveMotor()
+     	public CANSparkMax getDriveMotor()
 	{
 		return this.drivingMotor;
 	}
@@ -154,25 +164,15 @@ public class QuailSwerveModule extends SwerveModuleBase
 	 * 
 	 * @return The steering motor.
 	 */
-	public TalonFX getSteeringMotor()
+	public CANSparkMax getSteeringMotor()
 	{
 		return this.steeringMotor;
-	}
-
-	/**
-	 * Getter for the can coder.
-	 * 
-	 * @return The can coder
-	 */
-	public CANcoder getCanCoder()
-	{
-		return this.canCoder;
 	}
 
 	@Override
 	public String toString()
 	{
 		// The class will be represented as "SwerveModule[Steering Motor ID = ?, Driving Motor ID = ?, Cancoder ID = ?]"
-		return "SwerveModule[Steering Motor ID = " + this.steeringMotor.getDeviceID() + ", Driving Motor ID = " + this.drivingMotor.getDeviceID() + ", Cancoder ID = " + this.canCoder.getDeviceID() + "]";
+		return "SwerveModule[Steering Motor ID = " + this.steeringMotor.getDeviceId() + ", Driving Motor ID = " + this.drivingMotor.getDeviceId() + ", Cancoder ID = " + this.analogEncoderID + "]";
 	}
 }

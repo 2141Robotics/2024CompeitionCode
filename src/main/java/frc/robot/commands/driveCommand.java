@@ -13,7 +13,7 @@ import frc.robot.math.Constants;
 
 
 public class driveCommand extends Command{
-    public XboxController PRIMARY_CONTROLLER;
+    public XboxController primaryController;
     public AHRS gyro;
     public QuailSwerveDrive driveTrain;
     public AccelerationLimitedVector a_leftStickVector = new AccelerationLimitedVector(0.1);
@@ -25,7 +25,7 @@ public class driveCommand extends Command{
 
     public driveCommand(XboxController controller1, AHRS gyro1, QuailSwerveDrive driveTrain1){
         super();
-        PRIMARY_CONTROLLER = controller1;
+        primaryController = controller1;
         gyro = gyro1;
         driveTrain = driveTrain1;
     }
@@ -41,12 +41,12 @@ public class driveCommand extends Command{
     @Override
     public void execute() {
         super.execute();
-        double leftX = PRIMARY_CONTROLLER.getLeftX();
-		double leftY = - PRIMARY_CONTROLLER.getLeftY(); /// Y UP is negative
-		double rightY = -PRIMARY_CONTROLLER.getRightY();
-		double rightX = -PRIMARY_CONTROLLER.getRightX();
+        double leftX = primaryController.getLeftX();
+		double leftY = - primaryController.getLeftY(); /// Y UP is negative
+		double rightY = -primaryController.getRightY();
+		double rightX = -primaryController.getRightX();
 
-		double rightTrigger = PRIMARY_CONTROLLER.getRightTriggerAxis();
+		double rightTrigger = primaryController.getRightTriggerAxis();
 		
 		Vec2d leftStickVector = new Vec2d(leftX, leftY);
         Vec2d rightStickVector = new Vec2d(rightX, rightY);
@@ -71,24 +71,22 @@ public class driveCommand extends Command{
         Vec2d driveVector = leftStickVector.normalize().scale(speedScale);
         Vec2d newDriveVector = a_driveVector.update(driveVector);
 
-        System.out.println(newDriveVector.getLength());
-
 
 		if ((Math.abs(rstick.x) < 0.1) && (lstick.getLength() < 0.05)){
 			driveTrain.stop();
-			if (PRIMARY_CONTROLLER.getAButton()) {
+			if (primaryController.getAButton()) {
 				driveTrain.XLockModules();
 			}
-			driveTrain.brakeOn();
 		}
 		else {
 			
 			RobotMovement movement = new RobotMovement(rightStickVector.x / 35, newDriveVector);
-			driveTrain.move(movement, this.gyro.getAngle() * Constants.DEG_TO_RAD);
+			driveTrain.move(movement, 0.25 + (this.gyro.getAngle() * Constants.DEG_TO_RAD));
 		}
-		if(PRIMARY_CONTROLLER.getYButton()){
+		if(primaryController.getYButton()){
 			gyro.reset();
 		}
+        System.out.println("Drive command done");
     }
     @Override
     public void end(boolean interrupted) {

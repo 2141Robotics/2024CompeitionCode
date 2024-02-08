@@ -43,7 +43,6 @@ public class QuailSwerveDrive extends SwerveDrive<QuailSwerveModule>
 	}
 	public void softResetMotors() {
 		this.modules.forEach(m -> m.init());
-		this.brakeOn();
 	}
 
 	
@@ -54,7 +53,6 @@ public class QuailSwerveDrive extends SwerveDrive<QuailSwerveModule>
 	public void resetMotors()
 	{
 		this.modules.forEach(m -> m.reset());
-		this.brakeOn();
 
 	}
 
@@ -127,17 +125,6 @@ public class QuailSwerveDrive extends SwerveDrive<QuailSwerveModule>
     /** 
 	 * Set modules into coast mode 
 	*/
-	public void coastOn(){
-		for(QuailSwerveModule module : this.modules) {
-			module.drivingMotor.setControl(new CoastOut());
-		}
-	}
-
-	public void brakeOn(){
-		for(QuailSwerveModule module : this.modules) {
-			module.drivingMotor.setControl(new StaticBrake());
-		}
-	}
 
 	public ArrayList<Vec2d> getModuleSpeeds() {
         ArrayList<Vec2d> vectors = new ArrayList<Vec2d>();
@@ -146,24 +133,4 @@ public class QuailSwerveDrive extends SwerveDrive<QuailSwerveModule>
         }
         return vectors;
     }
-
-
-    
-	/**
-	 * Average encoder distance of the drive modules
-	 * @return distance in encoder ticks before gear ratio
-	 */
-	public double averageDist() {
-		int totaldist = 0;
-		for (int i = 0; i <4; i++) {
-			totaldist += this.modules.get(i).drivingMotor.getPosition().refresh().getValue();
-		}
-		return totaldist/4;
-	}
-
-	public void resetDistance(){
-		for (QuailSwerveModule module : this.modules) {
-			module.drivingMotor.setPosition(0d);
-		}
-	}
 }
