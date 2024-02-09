@@ -30,11 +30,12 @@ public class Constants
 	public static final int INCHES_PER_FOOT = 12;
 
 	public static final double steeringRatio = 12.8d;
-	public static final double driveRatio = 6.75d;
+	public static final double driveRatio = 6.12d;
 
 	public static final double deadZonePercent = 0.05d;
 
 	public static final double METERS_TO_INCHES = 39.3701;
 
 	public static final int kDriverControllerPort = 0;
+	public static final double wheelDiameter = 3.95d;
 }

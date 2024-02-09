@@ -63,8 +63,8 @@ public class QuailSwerveModule extends SwerveModuleBase
 		this.steeringMotor.restoreFactoryDefaults();
 		this.pidController = this.steeringMotor.getPIDController();
 
-		kP = 0.4;
-		kI = 0.01;
+		kP = 0.2;
+		kI = 0.00;
 		kD = 0.00;
 		kIz = 0;
 		kFF = 0.000;
@@ -79,6 +79,8 @@ public class QuailSwerveModule extends SwerveModuleBase
     	pidController.setOutputRange(kMinOutput, kMaxOutput);
 		this.steeringMotor.setInverted(false);
 		this.steeringMotor.setIdleMode(IdleMode.kBrake);
+		this.drivingMotor.setIdleMode(IdleMode.kBrake);
+		this.drivingMotor.burnFlash();
 
 		this.steeringMotor.burnFlash();
 
@@ -106,7 +108,7 @@ public class QuailSwerveModule extends SwerveModuleBase
 		
 		this.steeringMotor.getEncoder().setPosition(getAbsoluteEncoderAngle() * Constants.steeringRatio);
 		this.currentAngle = (getAbsoluteEncoderAngle() * Constants.TWO_PI);
-		this.setAngle(0);
+		this.setAngle(this.currentAngle);
 		
 		/* 
 		// Set the steering motor's internal rotation to 0.
@@ -120,7 +122,11 @@ public class QuailSwerveModule extends SwerveModuleBase
 	}
 
 	public Vec2d getCurrentMovement() {
-		return new Vec2d();
+		double speed = this.drivingMotor.getEncoder().getVelocity();
+		speed = speed / 60; // convert to seconds
+		speed = speed / Constants.driveRatio; // convert to real wheel rotations
+		speed = speed * Constants.wheelDiameter * Math.PI;
+		return new Vec2d(this.getAbsoluteEncoderAngle() * Constants.TWO_PI, speed, false);
 	}
 
 	public AnalogEncoder getEncoder() {
