@@ -31,7 +31,7 @@ public class QuailSwerveModule extends SwerveModuleBase
 	public SparkPIDController pidController;
 
 	public final double analogEncoderID;
-	public final double analogEncoderOffset;
+	public double analogEncoderOffset;
 	
 	public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput;
 
@@ -97,6 +97,30 @@ public class QuailSwerveModule extends SwerveModuleBase
 		currentPos = (currentPos + 1) % 1;
 
 		return currentPos;
+	}
+
+	/**
+	 * Returns the steering motor's angle without any modifications.
+	 * 
+	 * @return The steering motor's rotation in rotations (-1 to 1)
+	 */
+	public double getRawAbsoluteEncoderAngle() {
+		return this.analogEncoder.getAbsolutePosition();
+	}
+
+	/**
+	 * Updates the steering motor's rotational offset.
+	 * Note! This should be done with the robot on the ground and the wheels facing forward as straight as possible.
+	 * 
+	 * @param newAbsoluteEncoderOffset The new rotational offset in rotations (-1 to 1)
+	 */
+	public void updateAbsoluteEncoderOffset(double newAbsoluteEncoderOffset) {
+		if (newAbsoluteEncoderOffset > 1 || newAbsoluteEncoderOffset < -1) {
+			throw new IllegalArgumentException("The new absolute encoder offset must be between -1 and 1");
+		}
+
+		System.out.println("Updating encoder offset for analogEncoderId: " + this.analogEncoderID + " to " + this.analogEncoder.getAbsolutePosition() + " from " + this.analogEncoderOffset);
+		this.analogEncoderOffset = newAbsoluteEncoderOffset;
 	}
 
 	/**
@@ -181,4 +205,6 @@ public class QuailSwerveModule extends SwerveModuleBase
 		// The class will be represented as "SwerveModule[Steering Motor ID = ?, Driving Motor ID = ?, Cancoder ID = ?]"
 		return "SwerveModule[Steering Motor ID = " + this.steeringMotor.getDeviceId() + ", Driving Motor ID = " + this.drivingMotor.getDeviceId() + ", Cancoder ID = " + this.analogEncoderID + "]";
 	}
+
+	
 }
