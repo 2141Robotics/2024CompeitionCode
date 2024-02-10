@@ -28,4 +28,14 @@ public final class AutoRoutines {
     );
   }
 
+  public Command driveForward10Feet() {
+    ArrayList<Pose2d> points = new ArrayList<Pose2d>();
+    points.add(new Pose2d(0,0,0));
+    points.add(new Pose2d(0, 10,0));
+
+    return Commands.parallel(
+      new RunPath(this.driveTrain, points)
+    );
+  }
+
 }

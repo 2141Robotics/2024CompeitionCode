@@ -115,7 +115,7 @@ public class QuailDriveTrain extends SubsystemBase {
    * @return the command to move the drive train
    */
   public void move(RobotMovement movement, double gyroOffset) {
-    System.out.println("Moving drive train..." + movement.toString() + " " + gyroOffset);
+    // System.out.println("Moving drive train..." + movement.toString() + " " + gyroOffset);
     driveTrain.move(movement, gyroOffset);
   }
 
@@ -135,13 +135,15 @@ public class QuailDriveTrain extends SubsystemBase {
     }
   }
 
+  public boolean test() {
+    return true;
+  }
+
   /**
    * Create the telemetry for the drive train.
    */
   @Override
   public void initSendable(SendableBuilder builder) {
-    super.initSendable(builder);
-
     // Add telemetry data for each module in the drive train
     // This is a little hacky because of some java constraints
     builder.addDoubleProperty("Absolute Encoder 0", () -> absoluteEncoderValues.get(0), null);

@@ -35,7 +35,10 @@
   },
   "NTProvider": {
     "types": {
-      "/FMSInfo": "FMSInfo"
+      "/FMSInfo": "FMSInfo",
+      "/SmartDashboard/Drive Train Active Command: ": "Subsystem",
+      "/SmartDashboard/Scheduler": "Scheduler",
+      "/SmartDashboard/Zero Absolute Encoders": "Command"
     }
   },
   "NetworkTables": {

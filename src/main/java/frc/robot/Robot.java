@@ -10,6 +10,8 @@ import com.mineinjava.quail.pathing.PathFollower;
 import com.mineinjava.quail.util.geometry.Pose2d;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -31,6 +33,11 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     // Instantiate our RobotContainer. This will perform all our button bindings,
     m_robotContainer = new RobotContainer();
+
+    // Show scheduler status on SmartDashboard
+    Shuffleboard.getTab("Commands").add(CommandScheduler.getInstance());
+
+    System.out.println("Robot Initialized");
   }
 
   /**

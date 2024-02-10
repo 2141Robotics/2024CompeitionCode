@@ -9,6 +9,9 @@ import frc.robot.commands.ManualDrive;
 import frc.robot.components.GyroModule;
 import frc.robot.subsystems.QuailDriveTrain;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -32,12 +35,31 @@ public class RobotContainer {
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final XboxController m_driverController = new XboxController(Constants.kDriverControllerPort);
 
+  // Chooser for autonomous routines
+  SendableChooser<Command> m_chooser = new SendableChooser<>();
+
+  // All auto routines
+  private final AutoRoutines m_autoRoutines = new AutoRoutines(s_DriveTrain);
+
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
     // Configure the trigger bindings
     configureBindings();
+
+    // Put subsystems w/ their active commands on the smart dashboard
+    Shuffleboard.getTab("DriveTrain").add("Telemetry", s_DriveTrain);
+
+    // Put subsystem state on the smart dashboard
+
+    // Put manual buttons on the smart dashboard
+    Shuffleboard.getTab("DriveTrain").add("Zero Absolute Encoders", s_DriveTrain.resetAbsoluteEncoders());
+
+    // Put auto routines on the smart dashboard
+    m_chooser.setDefaultOption("Default Auto", m_autoRoutines.defaultAuto());
+    m_chooser.addOption("Drive Forward 10 Feet", m_autoRoutines.driveForward10Feet());
+    Shuffleboard.getTab("Autonomous").add("Select Autonomous Profile", m_chooser);
   }
 
   /**
