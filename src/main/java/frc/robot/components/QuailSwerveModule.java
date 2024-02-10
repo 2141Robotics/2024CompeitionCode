@@ -26,8 +26,6 @@ public class QuailSwerveModule extends SwerveModuleBase
 	/** The can coder measuring the module's absolute rotaiton. */
 	private final AnalogEncoder analogEncoder;
 	/** The can coder's rotational offset. This value must be manually set through phoenix tuner. */
-	
-	public SparkPIDController pidController;
 
 	public final double analogEncoderID;
 	public double analogEncoderOffset;
@@ -52,9 +50,24 @@ public class QuailSwerveModule extends SwerveModuleBase
 		this.analogEncoderOffset = analogEncoderOffset;
 		this.analogEncoderID = analogEncoderID;
 		this.steeringMotor.restoreFactoryDefaults();
-		this.pidController = this.steeringMotor.getPIDController();
-		
 
+		System.out.println("Finished initializing" + this.toString());
+		this.reset();
+	}
+	
+	/**
+	 * Sets the module's angle to the desired angle.
+	 * TODO: Bernie thinks this is a no-op
+	 */
+	public void reset()
+	{
+		// Reset the motor rotations.
+		this.steeringMotor.getEncoder().setPosition(getAbsoluteEncoderAngle() * Constants.steeringRatio);
+		this.currentAngle = (getAbsoluteEncoderAngle() * Constants.TWO_PI);
+		this.setAngle(this.currentAngle);
+
+
+		SparkPIDController pidController = this.steeringMotor.getPIDController();
 		kP = 0.2;
 		kI = 0.00;
 		kD = 0.00;
@@ -75,21 +88,6 @@ public class QuailSwerveModule extends SwerveModuleBase
 		this.drivingMotor.setInverted(true);
 		this.drivingMotor.burnFlash();
 		this.steeringMotor.burnFlash();
-		System.out.println("Finished initializing" + this.toString());
-		this.reset();
-	}
-	
-	/**
-	 * Sets the module's angle to the desired angle.
-	 * TODO: Bernie thinks this is a no-op
-	 */
-	public void reset()
-	{
-		// Reset the motor rotations.
-		this.steeringMotor.getEncoder().setPosition(getAbsoluteEncoderAngle() * Constants.steeringRatio);
-		this.currentAngle = (getAbsoluteEncoderAngle() * Constants.TWO_PI);
-		this.setAngle(this.currentAngle);
-		
 		/* 
 		// Set the steering motor's internal rotation to 0.
 		double currentPos = this.canCoder.getAbsolutePosition().refresh().getValue();

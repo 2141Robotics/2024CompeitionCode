@@ -16,7 +16,10 @@ import com.mineinjava.quail.pathing.PathFollower;
 import com.mineinjava.quail.util.MiniPID;
 import com.mineinjava.quail.util.geometry.Vec2d;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.components.GyroModule;
@@ -32,6 +35,10 @@ public class QuailDriveTrain extends SubsystemBase {
   public SwerveOdometry odometry;
   public PathFollower pathFollower;
   public MiniPID pidcontroller;
+
+  private final GyroModule gyro;
+
+  private final Field2d field = new Field2d();
 
   // TODO(Bernie): move to contsnts
   public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput;
@@ -53,13 +60,17 @@ public class QuailDriveTrain extends SubsystemBase {
     driveTrain = new QuailSwerveDrive(gyro, modules);
     odometry = new SwerveOdometry(driveTrain);
 
+    this.gyro = gyro;
+
     // Initialize arrays for tracking position, velocity, and acceleration
     for (int i = 0; i < modules.size(); i++) {
       absoluteEncoderValues.add(0.0);
       motorEncoderValues.add(0.0);
       encoderRawValues.add(0.0);
     }
+    Shuffleboard.getTab("DriveTrain").add(this.field);
   }
+
   public void resetModules() {
     for (QuailSwerveModule module : this.modules) {
       module.reset();
@@ -150,7 +161,13 @@ public class QuailDriveTrain extends SubsystemBase {
       motorEncoderValues.set(i, modules.get(i).steeringMotor.getEncoder().getPosition() / Constants.GEAR_RATIO_SWERVE);
       encoderRawValues.set(i, modules.get(i).getRawAbsoluteEncoderAngle());
     }
+    ArrayList<Vec2d> moduleSpeeds = this.driveTrain.getModuleSpeeds();
+    RobotMovement velocity = this.odometry.calculateFastOdometry(moduleSpeeds);
 
+    this.odometry.updateDeltaPoseEstimate(velocity.translation.scale(Constants.LOOPTIME).rotate(this.gyro.getAngleDegrees(), true));
+    this.odometry.setAngle(-this.gyro.getAngleRadians());
+
+    field.setRobotPose(this.odometry.y / Constants.INCHES_PER_METER, -this.odometry.x / Constants.INCHES_PER_METER, new Rotation2d(this.odometry.theta));
   }
 
   public boolean test() {

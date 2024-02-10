@@ -35,4 +35,5 @@ public class Constants
 	public static final double wheelDiameter = 3.95d;
 
 	public static final double GEAR_RATIO_SWERVE = 12.8d;
+	public static final double LOOPTIME = 0.02; /// looptime in seconds
 }

@@ -34,6 +34,7 @@ public class ManualDrive extends Command{
     public void initialize() {
         super.initialize();
         driveTrain.stop();
+        driveTrain.resetModules();
         System.out.println("Starting drive command...");
     }
 

@@ -40,7 +40,7 @@ public class RobotContainer {
   SendableChooser<Command> m_chooser = new SendableChooser<>();
 
   // All auto routines
-  private final AutoRoutines m_autoRoutines = new AutoRoutines(s_DriveTrain);
+  private final AutoRoutines m_autoRoutines = new AutoRoutines(s_DriveTrain, m_gyro);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -105,7 +105,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    AutoRoutines autoRoutines = new AutoRoutines(s_DriveTrain);
-    return autoRoutines.defaultAuto();
+    return m_chooser.getSelected();
   }
 }
