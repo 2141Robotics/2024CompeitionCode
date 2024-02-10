@@ -187,22 +187,18 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     ArrayList<Pose2d> points = new ArrayList<Pose2d>();
-    /*
+
     points.add(new Pose2d(-20,80,0));
     points.add(new Pose2d(-20, 180,0));
     points.add(new Pose2d(-20, 80,0));
-    */
-    points.add(new Pose2d(0,0,0));
-    points.add(new Pose2d(0, 20,0));
-    points.add(new Pose2d(0, 0,0));
 
 
     this.pidcontroller = new MiniPID(0.0, 0.000, 0);
     this.pidcontroller.setF(0.0);
 
-    ConstraintsPair tp = new ConstraintsPair(200, 300);
-    ConstraintsPair rp = new ConstraintsPair(0.1, 1);
-    this.pathFollower = new PathFollower(odometry, null, tp, rp, pidcontroller, 3, 4, 1,15);
+    ConstraintsPair translationPair = new ConstraintsPair(200, 300);
+    ConstraintsPair rotationPair = new ConstraintsPair(0.1, 1);
+    this.pathFollower = new PathFollower(odometry, null, translationPair, rotationPair, pidcontroller, 3, 4, 1,15);
 
     m_autonomousCommand = new RunPath(pathFollower, drivetrain, points, odometry);
 
