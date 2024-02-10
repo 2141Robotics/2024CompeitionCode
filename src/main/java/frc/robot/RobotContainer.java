@@ -59,6 +59,8 @@ public class RobotContainer {
     // Put auto routines on the smart dashboard
     m_chooser.setDefaultOption("Default Auto", m_autoRoutines.defaultAuto());
     m_chooser.addOption("Drive Forward 10 Feet", m_autoRoutines.driveForward10Feet());
+    m_chooser.addOption("Drive to Pose", m_autoRoutines.driveToPose());
+
     Shuffleboard.getTab("Autonomous").add("Select Autonomous Profile", m_chooser);
   }
 
