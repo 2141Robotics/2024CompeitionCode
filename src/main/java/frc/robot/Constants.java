@@ -1,4 +1,4 @@
-package frc.robot.math;
+package frc.robot;
 
 /**
  * Container for various static variables.
@@ -7,11 +7,6 @@ package frc.robot.math;
  */
 public class Constants
 {
-	/** The delay in milliseconds before a report gets sent to DriverStation if an action fails. */
-	public static final int MS_DELAY = 30;
-
-	/** Settings are {kF, kP, kI, kD} *///		kV  kP	 kI  kD
-	public static final double[] PID_SETTINGS =  { 0.0d, 0.5d, 0.0d, 0.00d };
 
 	/** 2π */
 	public static final double TWO_PI = 2d * Math.PI;

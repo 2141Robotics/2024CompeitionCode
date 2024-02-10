@@ -1,7 +1,5 @@
 package frc.robot.components;
 
-import frc.robot.math.Constants;
-
 import com.mineinjava.quail.SwerveModuleBase;
 import com.mineinjava.quail.util.geometry.Vec2d;
 import com.revrobotics.CANSparkMax;
@@ -11,6 +9,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.AnalogEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants;
 
 /**
  * Container for one swerve module. Wraps two falcon500s: one for driving and one for steering.

@@ -9,7 +9,7 @@ import com.kauailabs.navx.frc.AHRS;
 import com.mineinjava.quail.SwerveDrive;
 import com.mineinjava.quail.util.geometry.Vec2d;
 
-import frc.robot.math.Constants;
+import frc.robot.Constants;
 
 
 /**
@@ -24,8 +24,10 @@ public class QuailSwerveDrive extends SwerveDrive<QuailSwerveModule>
 
 	/** A timer used to continually reset the motors. Prevents overshooting the rotation. */
 	private static int resetTimer = 0;
+
 	/** The gryoscope used for rotaiton measurements. */
-	private final AHRS gyro;
+	private final GyroModule gyroModule;
+
 	/** A list of all of the swerve modules on the drivetrain. */
 	private final List<QuailSwerveModule> modules;
 	
@@ -36,20 +38,22 @@ public class QuailSwerveDrive extends SwerveDrive<QuailSwerveModule>
 	 * @param gyroscope the swerve drive's gyroscope
 	 * @param QuailSwerveModules the swerve drive's wheel modules
 	 */
-	public QuailSwerveDrive(AHRS gyroscope, List<QuailSwerveModule> modules)
+	public QuailSwerveDrive(GyroModule gyroModule, List<QuailSwerveModule> modules)
 	{
 		super(modules);
-		this.gyro = gyroscope;
 		this.modules = modules;
+		this.gyroModule = gyroModule;
+
 		for (QuailSwerveModule module : modules) {
 			module.init();
 		}
+
 	}
+
 	public void softResetMotors() {
 		this.modules.forEach(m -> m.init());
 	}
 
-	
 	/**
 	 * Set a timer for reseting the motors.
 	 * Used to reset the motors multiple times.
@@ -58,14 +62,6 @@ public class QuailSwerveDrive extends SwerveDrive<QuailSwerveModule>
 	{
 		this.modules.forEach(m -> m.reset());
 
-	}
-
-	/**
-	 * Reset the gyro to 0°.
-	 */
-	public void resetGyro()
-	{
-		this.gyro.reset();
 	}
 
 	/**
@@ -105,17 +101,7 @@ public class QuailSwerveDrive extends SwerveDrive<QuailSwerveModule>
 	 */
 	public boolean canDrive()
 	{
-		return resetTimer <= 0 && !this.gyro.isCalibrating();
-	}
-
-	/**
-	 * Getter for the gyroscope.
-	 * 
-	 * @return The gyroscope.
-	 */
-	public AHRS getGyro()
-	{
-		return this.gyro;
+		return resetTimer <= 0 && !this.gyroModule.isCalibrating();
 	}
 
 	/**
@@ -144,9 +130,6 @@ public class QuailSwerveDrive extends SwerveDrive<QuailSwerveModule>
 		return builder.toString();
 	}
 
-	public double gettingangle(){
-		return this.gyro.getAngle() * Constants.DEG_TO_RAD;
-	}
 
 
 	public void stop(){
