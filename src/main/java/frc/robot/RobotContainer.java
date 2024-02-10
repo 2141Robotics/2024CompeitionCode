@@ -12,9 +12,10 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -33,7 +34,7 @@ public class RobotContainer {
   private final QuailDriveTrain s_DriveTrain = new QuailDriveTrain(m_gyro);
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final XboxController m_driverController = new XboxController(Constants.kDriverControllerPort);
+  private final CommandXboxController m_driverController = new CommandXboxController(Constants.kDriverControllerPort);
 
   // Chooser for autonomous routines
   SendableChooser<Command> m_chooser = new SendableChooser<>();
@@ -50,6 +51,8 @@ public class RobotContainer {
 
     // Put subsystems w/ their active commands on the smart dashboard
     Shuffleboard.getTab("DriveTrain").add("Telemetry", s_DriveTrain);
+
+    Shuffleboard.getTab("DriveTrain").add(m_gyro.getGyro());
 
     // Put subsystem state on the smart dashboard
 
@@ -89,6 +92,10 @@ public class RobotContainer {
     // m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
 
     // Make the default command for the drive train the drive command
+    m_driverController.back().onTrue(Commands.runOnce(() -> {
+              m_gyro.reset();}));
+
+    m_driverController.start().onTrue(s_DriveTrain.resetModulesCommand());
     s_DriveTrain.setDefaultCommand(new ManualDrive(m_driverController, m_gyro, s_DriveTrain));
   }
 

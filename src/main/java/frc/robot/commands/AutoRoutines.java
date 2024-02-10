@@ -20,9 +20,9 @@ public final class AutoRoutines {
   public AutoRoutines(QuailDriveTrain driveTrain) {
     this.driveTrain = driveTrain;
 
-    targetPoseX = Shuffleboard.getTab("Auto").add("Target Pose X", 0).getEntry();
-    targetPoseY = Shuffleboard.getTab("Auto").add("Target Pose Y", 0).getEntry();
-    targetPoseHeading = Shuffleboard.getTab("Auto").add("Heading", 0).getEntry();
+    targetPoseX = Shuffleboard.getTab("Autonomous").add("Target Pose X", 0).getEntry();
+    targetPoseY = Shuffleboard.getTab("Autonomous").add("Target Pose Y", 0).getEntry();
+    targetPoseHeading = Shuffleboard.getTab("Autonomous").add("Heading", 0).getEntry();
   }
 
   public Command defaultAuto() {

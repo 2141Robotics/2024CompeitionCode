@@ -35,10 +35,6 @@ public class QuailSwerveDrive extends SwerveDrive<QuailSwerveModule>
 		super(modules);
 		this.modules = modules;
 		this.gyroModule = gyroModule;
-
-		for (QuailSwerveModule module : modules) {
-			module.init();
-		}
 	}
 
 	/**

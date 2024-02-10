@@ -53,6 +53,7 @@ public class QuailSwerveModule extends SwerveModuleBase
 		this.analogEncoderID = analogEncoderID;
 		this.steeringMotor.restoreFactoryDefaults();
 		this.pidController = this.steeringMotor.getPIDController();
+		
 
 		kP = 0.2;
 		kI = 0.00;
@@ -71,23 +72,23 @@ public class QuailSwerveModule extends SwerveModuleBase
 		this.steeringMotor.setInverted(false);
 		this.steeringMotor.setIdleMode(IdleMode.kBrake);
 		this.drivingMotor.setIdleMode(IdleMode.kBrake);
+		this.drivingMotor.setInverted(true);
 		this.drivingMotor.burnFlash();
 		this.steeringMotor.burnFlash();
 		System.out.println("Finished initializing" + this.toString());
+		this.reset();
 	}
 	
 	/**
 	 * Sets the module's angle to the desired angle.
 	 * TODO: Bernie thinks this is a no-op
 	 */
-	@Deprecated
-	public void init()
+	public void reset()
 	{
 		// Reset the motor rotations.
-		System.out.println("RESET");
-		// this.steeringMotor.getEncoder().setPosition(getAbsoluteEncoderAngle() * Constants.steeringRatio);
-		// this.currentAngle = (getAbsoluteEncoderAngle() * Constants.TWO_PI);
-		// this.setAngle(this.currentAngle);
+		this.steeringMotor.getEncoder().setPosition(getAbsoluteEncoderAngle() * Constants.steeringRatio);
+		this.currentAngle = (getAbsoluteEncoderAngle() * Constants.TWO_PI);
+		this.setAngle(this.currentAngle);
 		
 		/* 
 		// Set the steering motor's internal rotation to 0.

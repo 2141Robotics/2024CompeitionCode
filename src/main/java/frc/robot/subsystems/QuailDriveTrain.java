@@ -39,14 +39,15 @@ public class QuailDriveTrain extends SubsystemBase {
   // Telemetry data
   public ArrayList<Double> absoluteEncoderValues = new ArrayList<Double>();
   public ArrayList<Double> motorEncoderValues = new ArrayList<Double>();
+  public ArrayList<Double> encoderRawValues = new ArrayList<Double>();
 
   public QuailDriveTrain(GyroModule gyro) {
     // Setup all of our swerve modules
     // TODO: Move to constants
-    modules.add(new QuailSwerveModule(new Vec2d(-13, -13), 1, 2, 0, 0));
-    modules.add(new QuailSwerveModule(new Vec2d(-13, 13), 3, 4, 1, 0));
-    modules.add(new QuailSwerveModule(new Vec2d(13, 13), 5, 6, 2, 0));
-    // modules.add(new QuailSwerveModule(new Vec2d(13, -13), 7, 8, 3, 0));
+    modules.add(new QuailSwerveModule(new Vec2d(13, 13), 1, 2, 0, 0.443-0.25));
+    modules.add(new QuailSwerveModule(new Vec2d(13, -13), 3, 4, 1, 0.425-0.25));
+    modules.add(new QuailSwerveModule(new Vec2d(-13, -13), 5, 6, 2, 0.062-0.25));
+    modules.add(new QuailSwerveModule(new Vec2d(-13, 13), 7, 8, 3, 0.359-0.25));
 
     // Initialize an underlying Quail drive train + odo
     driveTrain = new QuailSwerveDrive(gyro, modules);
@@ -56,7 +57,17 @@ public class QuailDriveTrain extends SubsystemBase {
     for (int i = 0; i < modules.size(); i++) {
       absoluteEncoderValues.add(0.0);
       motorEncoderValues.add(0.0);
+      encoderRawValues.add(0.0);
     }
+  }
+  public void resetModules() {
+    for (QuailSwerveModule module : this.modules) {
+      module.reset();
+    }
+  }
+
+  public Command resetModulesCommand(){
+    return this.runOnce(() -> {this.resetModules();});
   }
 
   /**
@@ -72,10 +83,17 @@ public class QuailDriveTrain extends SubsystemBase {
 
   /**
    * Retruns the Quail odometry object
+   * 
    * @return the Quail odometry object
    */
   public SwerveOdometry getOdometry() {
     return odometry;
+  }
+
+  public void stop() {
+    for (QuailSwerveModule module : this.modules) {
+      module.drivingMotor.set(0);
+    }
   }
 
   /////////////////////////////////////////////////////////////////////////////
@@ -96,11 +114,9 @@ public class QuailDriveTrain extends SubsystemBase {
    * 
    * @return the command to stop the drive train
    */
-  public Command stop() {
+  public Command stopCommand() {
     return this.runOnce(() -> {
-      for (QuailSwerveModule module : this.modules) {
-        module.drivingMotor.set(0);
-      }
+      this.stop();
     });
   }
 
@@ -114,7 +130,8 @@ public class QuailDriveTrain extends SubsystemBase {
    * @return the command to move the drive train
    */
   public void move(RobotMovement movement, double gyroOffset) {
-    // System.out.println("Moving drive train..." + movement.toString() + " " + gyroOffset);
+    // System.out.println("Moving drive train..." + movement.toString() + " " +
+    // gyroOffset);
     driveTrain.move(movement, gyroOffset);
   }
 
@@ -131,8 +148,9 @@ public class QuailDriveTrain extends SubsystemBase {
     for (int i = 0; i < modules.size(); i++) {
       absoluteEncoderValues.set(i, modules.get(i).getAbsoluteEncoderAngle());
       motorEncoderValues.set(i, modules.get(i).steeringMotor.getEncoder().getPosition() / Constants.GEAR_RATIO_SWERVE);
+      encoderRawValues.set(i, modules.get(i).getRawAbsoluteEncoderAngle());
     }
-    
+
   }
 
   public boolean test() {
@@ -149,11 +167,17 @@ public class QuailDriveTrain extends SubsystemBase {
     builder.addDoubleProperty("Absolute Encoder 0", () -> absoluteEncoderValues.get(0), null);
     builder.addDoubleProperty("Absolute Encoder 1", () -> absoluteEncoderValues.get(1), null);
     builder.addDoubleProperty("Absolute Encoder 2", () -> absoluteEncoderValues.get(2), null);
-    // builder.addDoubleProperty("Absolute Encoder 3", () -> absoluteEncoderValues.get(3), null);
-    
+    builder.addDoubleProperty("Absolute Encoder 3", () -> absoluteEncoderValues.get(3), null);
+
     builder.addDoubleProperty("Motor Encoder 0", () -> motorEncoderValues.get(0), null);
     builder.addDoubleProperty("Motor Encoder 1", () -> motorEncoderValues.get(1), null);
     builder.addDoubleProperty("Motor Encoder 2", () -> motorEncoderValues.get(2), null);
-    // builder.addDoubleProperty("Motor Encoder 3", () -> motorEncoderValues.get(3), null);
+    builder.addDoubleProperty("Motor Encoder 3", () -> motorEncoderValues.get(3), null);
+
+
+    builder.addDoubleProperty("raw Encoder 0", () -> encoderRawValues.get(0), null);
+    builder.addDoubleProperty("raw Encoder 1", () -> encoderRawValues.get(1), null);
+    builder.addDoubleProperty("raw Encoder 2", () -> encoderRawValues.get(2), null);
+    builder.addDoubleProperty("raw Encoder 3", () -> encoderRawValues.get(3), null);
   }
 }
