@@ -127,8 +127,10 @@ public class QuailSwerveModule extends SwerveModuleBase
 			throw new IllegalArgumentException("The new absolute encoder offset must be between -1 and 1");
 		}
 
-		System.out.println("Updating encoder offset for analogEncoderId: " + this.analogEncoderID + " to " + this.analogEncoder.getAbsolutePosition() + " from " + this.analogEncoderOffset);
+		System.out.println("Updating encoder + motoroffset for analogEncoderId: " + this.analogEncoderID + " to " + this.analogEncoder.getAbsolutePosition() + " from " + this.analogEncoderOffset);
 		this.analogEncoderOffset = newAbsoluteEncoderOffset;
+
+		this.steeringMotor.getEncoder().setPosition(getAbsoluteEncoderAngle() * Constants.steeringRatio);
 	}
 
 	public Vec2d getCurrentMovement() {

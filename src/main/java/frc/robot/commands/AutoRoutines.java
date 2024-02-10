@@ -22,7 +22,6 @@ public final class AutoRoutines {
     points.add(new Pose2d(0, 20,0));
     points.add(new Pose2d(0, 0,0));
 
-
     return Commands.parallel(
       new RunPath(this.driveTrain, points)
     );

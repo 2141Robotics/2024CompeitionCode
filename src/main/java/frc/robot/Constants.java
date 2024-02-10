@@ -29,11 +29,10 @@ public class Constants
 
 	public static final double deadZonePercent = 0.05d;
 
-	public static final double METERS_TO_INCHES = 39.3701;
+	public static final double INCHES_PER_METER = 39.3701;
 
 	public static final int kDriverControllerPort = 0;
 	public static final double wheelDiameter = 3.95d;
 
 	public static final double GEAR_RATIO_SWERVE = 12.8d;
-
 }
