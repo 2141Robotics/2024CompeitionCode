@@ -1,6 +1,5 @@
 package frc.robot.commands;
 
-import com.kauailabs.navx.frc.AHRS;
 import com.mineinjava.quail.RobotMovement;
 import com.mineinjava.quail.util.geometry.Vec2d;
 import com.mineinjava.quail.util.geometry.AccelerationLimitedDouble;
@@ -10,11 +9,10 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.components.GyroModule;
-import frc.robot.components.QuailSwerveDrive;
 import frc.robot.subsystems.QuailDriveTrain;
 
 
-public class driveCommand extends Command{
+public class ManualDrive extends Command{
     private final XboxController primaryController;
 
     private final GyroModule gyro;
@@ -25,7 +23,7 @@ public class driveCommand extends Command{
     private final AccelerationLimitedVector a_driveVector = new AccelerationLimitedVector(0.003);
     private final AccelerationLimitedDouble a_rtrigger = new AccelerationLimitedDouble(0.1);
 
-    public driveCommand(XboxController controller1, GyroModule gyro, QuailDriveTrain driveTrain){
+    public ManualDrive(XboxController controller1, GyroModule gyro, QuailDriveTrain driveTrain){
         super();
         primaryController = controller1;
         this.gyro = gyro;

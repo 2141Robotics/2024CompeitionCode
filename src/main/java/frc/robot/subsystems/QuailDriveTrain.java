@@ -70,6 +70,14 @@ public class QuailDriveTrain extends SubsystemBase {
     return driveTrain;
   }
 
+  /**
+   * Retruns the Quail odometry object
+   * @return the Quail odometry object
+   */
+  public SwerveOdometry getOdometry() {
+    return odometry;
+  }
+
   /////////////////////////////////////////////////////////////////////////////
   // Commands
   /////////////////////////////////////////////////////////////////////////////
@@ -107,6 +115,7 @@ public class QuailDriveTrain extends SubsystemBase {
    * @return the command to move the drive train
    */
   public void move(RobotMovement movement, double gyroOffset) {
+    System.out.println("Moving drive train..." + movement.toString() + " " + gyroOffset);
     driveTrain.move(movement, gyroOffset);
   }
 

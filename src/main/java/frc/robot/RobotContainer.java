@@ -4,8 +4,8 @@
 
 package frc.robot;
 
-import frc.robot.commands.Autos;
-import frc.robot.commands.driveCommand;
+import frc.robot.commands.AutoRoutines;
+import frc.robot.commands.ManualDrive;
 import frc.robot.components.GyroModule;
 import frc.robot.subsystems.QuailDriveTrain;
 import edu.wpi.first.wpilibj.XboxController;
@@ -65,7 +65,7 @@ public class RobotContainer {
     // m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
 
     // Make the default command for the drive train the drive command
-    s_DriveTrain.setDefaultCommand(new driveCommand(m_driverController, m_gyro, s_DriveTrain));
+    s_DriveTrain.setDefaultCommand(new ManualDrive(m_driverController, m_gyro, s_DriveTrain));
   }
 
   /**
@@ -74,8 +74,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // An example command will be run in autonomous
-    // return Autos.exampleAuto(m_exampleSubsystem);
-    return null;
+    AutoRoutines autoRoutines = new AutoRoutines(s_DriveTrain);
+    return autoRoutines.defaultAuto();
   }
 }

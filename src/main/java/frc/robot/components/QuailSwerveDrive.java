@@ -8,7 +8,7 @@ import com.mineinjava.quail.util.geometry.Vec2d;
 
 
 /**
- * Container for the robot's swerve drivetrain. Wraps a gyroscope and swerve modules.
+ * Subsystem for the robot's swerve drivetrain. Wraps a gyroscope and swerve modules.
  * 
  * @author 2141 Spartonics
  */
@@ -84,13 +84,6 @@ public class QuailSwerveDrive extends SwerveDrive<QuailSwerveModule>
 		builder.append("]");
 		return builder.toString();
 	}
-
-	// TODO: move to subsystem
-	// public void stop(){
-	// 	for(QuailSwerveModule module : this.modules) {
-	// 		module.drivingMotor.set(0);
-	// 	}
-	// }
 
 	public ArrayList<Vec2d> getModuleSpeeds() {
         ArrayList<Vec2d> vectors = new ArrayList<Vec2d>();
