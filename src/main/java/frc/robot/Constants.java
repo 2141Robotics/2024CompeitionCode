@@ -33,4 +33,7 @@ public class Constants
 
 	public static final int kDriverControllerPort = 0;
 	public static final double wheelDiameter = 3.95d;
+
+	public static final double GEAR_RATIO_SWERVE = 12.8d;
+
 }

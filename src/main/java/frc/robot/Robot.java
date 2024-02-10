@@ -78,10 +78,6 @@ public class Robot extends TimedRobot {
 		// if(pos[0] != 0 && pos[1] != 0){
 		// 	odometry.setPose(new Pose2d(-pos[1]* Constants.METERS_TO_INCHES, pos[0]* Constants.METERS_TO_INCHES, -this.gyro.getAngle() * Constants.DEG_TO_RAD));
 		// }
-
-    // Add a button to trigger calibration
-    // TODO(Bernie): Confirm this works, might need to be a subclass of WPILIB command
-    // SmartDashboard.putData("Calibrate absolute encoders", new drivetrain.calibrateAbosoluteEncoders());
   }
 
   /** This function is called once each time the robot enters Disabled mode. */

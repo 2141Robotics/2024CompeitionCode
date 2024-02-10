@@ -11,12 +11,22 @@
           "open": true
         }
       },
+      "SPARK MAX [1]": {
+        "header": {
+          "open": true
+        }
+      },
       "SPARK MAX [7]": {
         "header": {
           "open": true
         }
       },
       "SPARK MAX [8]": {
+        "header": {
+          "open": true
+        }
+      },
+      "navX-Sensor[0]": {
         "header": {
           "open": true
         }
@@ -29,6 +39,9 @@
     }
   },
   "NetworkTables": {
+    "Persistent Values": {
+      "open": false
+    },
     "Retained Values": {
       "open": false
     },
@@ -39,6 +52,15 @@
     }
   },
   "NetworkTables Info": {
+    "Clients": {
+      "open": true
+    },
+    "Connections": {
+      "open": true
+    },
+    "Server": {
+      "open": true
+    },
     "visible": true
   }
 }

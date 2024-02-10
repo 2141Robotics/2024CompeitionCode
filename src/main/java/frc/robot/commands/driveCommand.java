@@ -9,33 +9,36 @@ import com.mineinjava.quail.util.geometry.AccelerationLimitedVector;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
+import frc.robot.components.GyroModule;
 import frc.robot.components.QuailSwerveDrive;
+import frc.robot.subsystems.QuailDriveTrain;
 
 
 public class driveCommand extends Command{
-    public XboxController primaryController;
-    public AHRS gyro;
-    public QuailSwerveDrive driveTrain;
-    public AccelerationLimitedVector a_leftStickVector = new AccelerationLimitedVector(0.1);
-    public AccelerationLimitedVector a_rightStickVector = new AccelerationLimitedVector(0.1);
+    private final XboxController primaryController;
 
-    public AccelerationLimitedVector a_driveVector = new AccelerationLimitedVector(0.003);
+    private final GyroModule gyro;
+    private final QuailDriveTrain driveTrain;
 
-    public AccelerationLimitedDouble a_rtrigger = new AccelerationLimitedDouble(0.1);
+    private final AccelerationLimitedVector a_leftStickVector = new AccelerationLimitedVector(0.1);
+    private final AccelerationLimitedVector a_rightStickVector = new AccelerationLimitedVector(0.1);
+    private final AccelerationLimitedVector a_driveVector = new AccelerationLimitedVector(0.003);
+    private final AccelerationLimitedDouble a_rtrigger = new AccelerationLimitedDouble(0.1);
 
-    public driveCommand(XboxController controller1, AHRS gyro1, QuailSwerveDrive driveTrain1){
+    public driveCommand(XboxController controller1, GyroModule gyro, QuailDriveTrain driveTrain){
         super();
         primaryController = controller1;
-        gyro = gyro1;
-        driveTrain = driveTrain1;
+        this.gyro = gyro;
+        this.driveTrain = driveTrain;
+
+        addRequirements(driveTrain);
     }
 
     @Override
     public void initialize() {
         super.initialize();
-        driveTrain.softResetMotors();
         driveTrain.stop();
-        System.out.println("drive commmand start");
+        System.out.println("Starting drive command...");
     }
 
     @Override
@@ -75,27 +78,22 @@ public class driveCommand extends Command{
 		if ((Math.abs(rstick.x) < 0.1) && (lstick.getLength() < 0.05)){
 			driveTrain.stop();
 			if (primaryController.getAButton()) {
-				driveTrain.XLockModules();
+				driveTrain.getQuailSwerveDrive().XLockModules();
 			}
 		}
 		else {
 			
 			RobotMovement movement = new RobotMovement(rightStickVector.x / 35, newDriveVector);
-			driveTrain.move(movement, 0.25 + (this.gyro.getAngle() * Constants.DEG_TO_RAD));
+			driveTrain.move(movement, 0.25 + (this.gyro.getAngleRadians()));
 		}
 		if(primaryController.getYButton()){
 			gyro.reset();
 		}
-        System.out.println("Drive command done");
     }
+
     @Override
     public void end(boolean interrupted) {
-        System.out.println("drive command end");
-        
+        System.out.println("Simple drive command ending");
         super.end(interrupted);
-    }
-    @Override
-    public boolean isFinished() {
-        return false;
     }
 }

@@ -49,16 +49,8 @@ public class QuailSwerveModule extends SwerveModuleBase
 		this.drivingMotor = new CANSparkMax(driveMotorID, MotorType.kBrushless);
 		this.steeringMotor = new CANSparkMax(steeringMotorID, MotorType.kBrushless);
 		this.analogEncoder = new AnalogEncoder(analogEncoderID);
-		System.out.println("|||||||||" + analogEncoderID + "|||||||||");
 		this.analogEncoderOffset = analogEncoderOffset;
 		this.analogEncoderID = analogEncoderID;
-	}
-	
-	/**
-	 * Configures the motors and sets the steering motor's rotation to zero.
-	 */
-	public void init()
-	{
 		this.steeringMotor.restoreFactoryDefaults();
 		this.pidController = this.steeringMotor.getPIDController();
 
@@ -80,21 +72,38 @@ public class QuailSwerveModule extends SwerveModuleBase
 		this.steeringMotor.setIdleMode(IdleMode.kBrake);
 		this.drivingMotor.setIdleMode(IdleMode.kBrake);
 		this.drivingMotor.burnFlash();
-
 		this.steeringMotor.burnFlash();
-
-    	System.out.println("done config");
-
+		System.out.println("Finished initializing" + this.toString());
+	}
+	
+	/**
+	 * Sets the module's angle to the desired angle.
+	 * TODO: Bernie thinks this is a no-op
+	 */
+	@Deprecated
+	public void init()
+	{
 		// Reset the motor rotations.
-		this.reset();
+		System.out.println("RESET");
+		// this.steeringMotor.getEncoder().setPosition(getAbsoluteEncoderAngle() * Constants.steeringRatio);
+		// this.currentAngle = (getAbsoluteEncoderAngle() * Constants.TWO_PI);
+		// this.setAngle(this.currentAngle);
+		
+		/* 
+		// Set the steering motor's internal rotation to 0.
+		double currentPos = this.canCoder.getAbsolutePosition().refresh().getValue();
+		// The angle to rotate to face forward.
+		double angleToRotate = currentPos > 0.5d ? currentPos - 1d : currentPos;
+		// Set the steering motor's rotation.
+		this.steeringMotor.setPosition(angleToRotate * 12.8);
+		this.currentAngle = angleToRotate * Constants.TWO_PI;
+		*/
 	}
 
 	// returns rotations, 0 is x axis
 	public double getAbsoluteEncoderAngle() {
 		double currentPos = this.analogEncoder.getAbsolutePosition() - this.analogEncoderOffset;
-
 		currentPos = (currentPos + 1) % 1;
-
 		return currentPos;
 	}
 
@@ -122,28 +131,6 @@ public class QuailSwerveModule extends SwerveModuleBase
 		this.analogEncoderOffset = newAbsoluteEncoderOffset;
 	}
 
-	/**
-	 * Sets steering motor's rotation to zero.
-	 */
-	public void reset()
-	{
-		System.out.println("RESET");
-		
-		this.steeringMotor.getEncoder().setPosition(getAbsoluteEncoderAngle() * Constants.steeringRatio);
-		this.currentAngle = (getAbsoluteEncoderAngle() * Constants.TWO_PI);
-		this.setAngle(this.currentAngle);
-		
-		/* 
-		// Set the steering motor's internal rotation to 0.
-		double currentPos = this.canCoder.getAbsolutePosition().refresh().getValue();
-		// The angle to rotate to face forward.
-		double angleToRotate = currentPos > 0.5d ? currentPos - 1d : currentPos;
-		// Set the steering motor's rotation.
-		this.steeringMotor.setPosition(angleToRotate * 12.8);
-		this.currentAngle = angleToRotate * Constants.TWO_PI;
-		*/
-	}
-
 	public Vec2d getCurrentMovement() {
 		double speed = this.drivingMotor.getEncoder().getVelocity();
 		speed = speed / 60; // convert to seconds
@@ -152,16 +139,6 @@ public class QuailSwerveModule extends SwerveModuleBase
 		return new Vec2d(this.getAbsoluteEncoderAngle() * Constants.TWO_PI, speed, false);
 	}
 
-	public AnalogEncoder getEncoder() {
-		return this.analogEncoder;
-	}
-
-	public void putEncoderDash() {
-		SmartDashboard.putNumber("Encoder value " + this.analogEncoderID, this.getAbsoluteEncoderAngle());
-		SmartDashboard.putNumber("Motor value " + this.analogEncoderID, this.steeringMotor.getEncoder().getPosition() / 12.8);
-	}
-	
-	
 	@Override
 	public void setRawAngle(double angle)
 	{

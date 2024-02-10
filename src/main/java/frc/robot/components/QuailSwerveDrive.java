@@ -3,13 +3,8 @@ package frc.robot.components;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.ctre.phoenix6.controls.CoastOut;
-import com.ctre.phoenix6.controls.StaticBrake;
-import com.kauailabs.navx.frc.AHRS;
 import com.mineinjava.quail.SwerveDrive;
 import com.mineinjava.quail.util.geometry.Vec2d;
-
-import frc.robot.Constants;
 
 
 /**
@@ -19,9 +14,6 @@ import frc.robot.Constants;
  */
 public class QuailSwerveDrive extends SwerveDrive<QuailSwerveModule>
 {
-	// TODO: move me to a better home :)
-	public static final double ABSOLUTE_ENCODER_OFFSET_POLL_EVENTS = 50; // How many times to poll the absolute encoder for calibration
-
 	/** A timer used to continually reset the motors. Prevents overshooting the rotation. */
 	private static int resetTimer = 0;
 
@@ -47,52 +39,25 @@ public class QuailSwerveDrive extends SwerveDrive<QuailSwerveModule>
 		for (QuailSwerveModule module : modules) {
 			module.init();
 		}
-
-	}
-
-	public void softResetMotors() {
-		this.modules.forEach(m -> m.init());
-	}
-
-	/**
-	 * Set a timer for reseting the motors.
-	 * Used to reset the motors multiple times.
-	 */
-	public void resetMotors()
-	{
-		this.modules.forEach(m -> m.reset());
-
 	}
 
 	/**
 	 * Calibrate the absolute encoders offsets. 
+	 * 
+	 * Right now kinda hacky as it will just set the offset to the current value of the absolute encoder.
 	 * 
 	 * Note! This should only be called with all the steering motors set to face forward.
 	 */
 	public void calibrateAbosoluteEncoders() {
 		System.out.println("Calibrating absolute encoders");
 
-		// Calculate the average of the absolute encoder values for each module for the duration of the calibration
-		ArrayList<Double> sums = new ArrayList<Double>();
-		for (int i = 0; i < this.modules.size(); i++) {
-			sums.add(0.0);
-		}
-
-		// Get a sum of the absolute encoder values for each module for n poll events
-		for (int i = 0; i < ABSOLUTE_ENCODER_OFFSET_POLL_EVENTS; i++) {
-			for (int j = 0; j < this.modules.size(); j++) {
-				sums.set(j, sums.get(j) + this.modules.get(j).getRawAbsoluteEncoderAngle());
-			}
-		}
-
-		// Set the offset of each module to the average value
+		// Set the offset to the current value of the absolute encoder
 		for (QuailSwerveModule module : this.modules) {
-			module.updateAbsoluteEncoderOffset(sums.get(this.modules.indexOf(module)) / ABSOLUTE_ENCODER_OFFSET_POLL_EVENTS);
+			module.updateAbsoluteEncoderOffset(module.getRawAbsoluteEncoderAngle());
 		}
 
 		System.out.println("Absolute encoder offset calibration complete!");
 	}
-	
 
 	/**
 	 * Checks if the robot is resetting or if the gyro is callibrating.
@@ -102,16 +67,6 @@ public class QuailSwerveDrive extends SwerveDrive<QuailSwerveModule>
 	public boolean canDrive()
 	{
 		return resetTimer <= 0 && !this.gyroModule.isCalibrating();
-	}
-
-	/**
-	 * Getter for the swerve modules.
-	 * 
-	 * @return The swerve modules.
-	 */
-	public List<QuailSwerveModule> getModules()
-	{
-		return this.modules;
 	}
 
 	@Override
@@ -130,17 +85,12 @@ public class QuailSwerveDrive extends SwerveDrive<QuailSwerveModule>
 		return builder.toString();
 	}
 
-
-
-	public void stop(){
-		for(QuailSwerveModule module : this.modules) {
-			module.drivingMotor.set(0);
-		}
-	}
-
-    /** 
-	 * Set modules into coast mode 
-	*/
+	// TODO: move to subsystem
+	// public void stop(){
+	// 	for(QuailSwerveModule module : this.modules) {
+	// 		module.drivingMotor.set(0);
+	// 	}
+	// }
 
 	public ArrayList<Vec2d> getModuleSpeeds() {
         ArrayList<Vec2d> vectors = new ArrayList<Vec2d>();
