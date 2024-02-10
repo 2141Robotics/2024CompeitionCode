@@ -55,9 +55,9 @@ public final class AutoRoutines {
     double y = targetPoseY.getDouble(0);
     System.out.println("Moving in auto to pose: " + x + " , " + y);
     double heading = targetPoseHeading.getDouble(0);
-    points.add(driveTrain.odometry.getPose());
+    //points.add(driveTrain.odometry.getPose());
     points.add(new Pose2d(x, y, heading));
-    
+
 
     return Commands.sequence(
         Commands.runOnce(() -> {
