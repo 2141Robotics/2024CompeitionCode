@@ -8,7 +8,7 @@ import com.mineinjava.quail.util.geometry.Vec2d;
 
 
 /**
- * Subsystem for the robot's swerve drivetrain. Wraps a gyroscope and swerve modules.
+ * Swerve drive instance
  * 
  * @author 2141 Spartonics
  */
@@ -17,7 +17,7 @@ public class QuailSwerveDrive extends SwerveDrive<QuailSwerveModule>
 	/** A timer used to continually reset the motors. Prevents overshooting the rotation. */
 	private static int resetTimer = 0;
 
-	/** The gryoscope used for rotaiton measurements. */
+	/** The gryoscope used for rotation measurements. */
 	private final GyroModule gyroModule;
 
 	/** A list of all of the swerve modules on the drivetrain. */
@@ -35,24 +35,6 @@ public class QuailSwerveDrive extends SwerveDrive<QuailSwerveModule>
 		super(modules);
 		this.modules = modules;
 		this.gyroModule = gyroModule;
-	}
-
-	/**
-	 * Calibrate the absolute encoders offsets. 
-	 * 
-	 * Right now kinda hacky as it will just set the offset to the current value of the absolute encoder.
-	 * 
-	 * Note! This should only be called with all the steering motors set to face forward.
-	 */
-	public void calibrateAbosoluteEncoders() {
-		System.out.println("Calibrating absolute encoders");
-
-		// Set the offset to the current value of the absolute encoder
-		for (QuailSwerveModule module : this.modules) {
-			module.updateAbsoluteEncoderOffset(module.getRawAbsoluteEncoderAngle());
-		}
-
-		System.out.println("Absolute encoder offset calibration complete!");
 	}
 
 	/**
@@ -81,6 +63,10 @@ public class QuailSwerveDrive extends SwerveDrive<QuailSwerveModule>
 		return builder.toString();
 	}
 
+	/**
+	 * Fetches the current speeds of the swerve modules.
+	 * @return An array of the current speeds of the swerve modules
+	 */
 	public ArrayList<Vec2d> getModuleSpeeds() {
         ArrayList<Vec2d> vectors = new ArrayList<Vec2d>();
         for (QuailSwerveModule module : this.swerveModules) {
