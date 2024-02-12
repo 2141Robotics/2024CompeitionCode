@@ -14,15 +14,13 @@ import frc.robot.subsystems.QuailDriveTrain;
 public final class AutoRoutines {
 
   private QuailDriveTrain driveTrain;
-  private final GyroModule gyro;
 
   private GenericEntry targetPoseX;
   private GenericEntry targetPoseY;
   private GenericEntry targetPoseHeading;
 
-  public AutoRoutines(QuailDriveTrain driveTrain, GyroModule gyro) {
+  public AutoRoutines(QuailDriveTrain driveTrain) {
     this.driveTrain = driveTrain;
-    this.gyro = gyro;
 
     targetPoseX = Shuffleboard.getTab("Autonomous").add("TargetPoseX", 0).getEntry();
     targetPoseY = Shuffleboard.getTab("Autonomous").add("TargetPoseY", 0).getEntry();
@@ -54,6 +52,10 @@ public final class AutoRoutines {
         new RunPath(this.driveTrain, points));
   }
 
+  /**
+   * TODO: This right now has a bug since the initial pose is set when the command is created. We need to set the pose when the command is run.
+   * @return
+   */
   public Command driveToPose() {
     ArrayList<Pose2d> points = new ArrayList<Pose2d>();
 
@@ -66,9 +68,7 @@ public final class AutoRoutines {
 
 
     return Commands.sequence(
-        Commands.runOnce(() -> {
-          gyro.reset();
-        }),
+        this.driveTrain.resetGyroCommand(),
         this.driveTrain.resetModulesCommand(),
         new RunPath(this.driveTrain, points));
   }

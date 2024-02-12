@@ -8,14 +8,12 @@ import frc.robot.commands.AutoRoutines;
 import frc.robot.commands.ManualDrive;
 import frc.robot.components.GyroModule;
 import frc.robot.subsystems.QuailDriveTrain;
-import frc.robot.subsystems.ServoController;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 
 /**
@@ -28,11 +26,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  // Initialize the gyro module
-  private final GyroModule m_gyro = new GyroModule();
-
   // Initialize all subsystems
-  private final QuailDriveTrain s_DriveTrain = new QuailDriveTrain(m_gyro);
+  private final QuailDriveTrain s_DriveTrain = new QuailDriveTrain();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController = new CommandXboxController(Constants.kDriverControllerPort);
@@ -41,7 +36,7 @@ public class RobotContainer {
   SendableChooser<Command> m_chooser = new SendableChooser<>();
 
   // All auto routines
-  private final AutoRoutines m_autoRoutines = new AutoRoutines(s_DriveTrain, m_gyro);
+  private final AutoRoutines m_autoRoutines = new AutoRoutines(s_DriveTrain);
 
   private final ServoController servoController = new ServoController();
 
@@ -52,15 +47,17 @@ public class RobotContainer {
     // Configure the trigger bindings
     configureBindings();
 
-    // Put subsystems w/ their active commands on the smart dashboard
+    // Add some logging hooks to the command scheduler
+    CommandScheduler.getInstance()
+        .onCommandInitialize(command -> System.out.println("Command initialized: " + command.getName()));
+    CommandScheduler.getInstance()
+        .onCommandInterrupt(command -> System.out.println("Command interrupted: " + command.getName()));
+    CommandScheduler.getInstance()
+        .onCommandFinish(command -> System.out.println("Command finished: " + command.getName()));
+
+    // Put subsystems on the smart dashboard
     Shuffleboard.getTab("DriveTrain").add("Telemetry", s_DriveTrain);
-
-    Shuffleboard.getTab("DriveTrain").add(m_gyro.getGyro());
-
-    // Put subsystem state on the smart dashboard
-
-    // Put manual buttons on the smart dashboard
-    Shuffleboard.getTab("DriveTrain").add("Zero Absolute Encoders", s_DriveTrain.resetAbsoluteEncoders());
+    Shuffleboard.getTab("DriveTrain").add("Gyro", s_DriveTrain.getGyro());
 
     // Put auto routines on the smart dashboard
     m_chooser.setDefaultOption("Default Auto", m_autoRoutines.defaultAuto());
@@ -85,26 +82,14 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-    // new Trigger(m_exampleSubsystem::exampleCondition)
-    // .onTrue(new ExampleCommand(m_exampleSubsystem));
-
-    // Schedule `exampleMethodCommand` when the Xbox controller's B button is
-    // pressed,
-    // cancelling on release.
-    // m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
-
     // Make the default command for the drive train the drive command
-    m_driverController.back().onTrue(Commands.runOnce(() -> {
-              m_gyro.reset();}));
+    s_DriveTrain.setDefaultCommand(new ManualDrive(m_driverController, s_DriveTrain));
 
-    m_driverController.a().onTrue(this.servoController.setEnableShooting());
-    m_driverController.b().onTrue(this.servoController.setDisableShooting());
+    // Bind the reset gyro command to the back button`
+    m_driverController.back().onTrue(Commands.runOnce(() -> s_DriveTrain.resetGyro(), s_DriveTrain));
 
-    m_driverController.y().onTrue(this.s_DriveTrain.resetOdometry());
-
-    m_driverController.start().onTrue(s_DriveTrain.resetModulesCommand());
-    s_DriveTrain.setDefaultCommand(new ManualDrive(m_driverController, m_gyro, s_DriveTrain));
+    // Bind the reset modules command to the start button
+    m_driverController.start().onTrue(Commands.runOnce(() -> s_DriveTrain.resetModulesCommand(), s_DriveTrain));
   }
 
   /**
