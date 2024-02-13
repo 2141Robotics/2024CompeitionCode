@@ -3,6 +3,8 @@ plugins {
     id "edu.wpi.first.GradleRIO" version "2024.2.1"
 }
 
+compileJava {options.encoding = "UTF-8"}   
+
 java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
