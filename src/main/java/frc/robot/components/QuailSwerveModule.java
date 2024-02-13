@@ -2,170 +2,174 @@ package frc.robot.components;
 
 import com.mineinjava.quail.SwerveModuleBase;
 import com.mineinjava.quail.util.geometry.Vec2d;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
-
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.SparkPIDController;
 import edu.wpi.first.wpilibj.AnalogEncoder;
 import frc.robot.Constants;
 
 /**
- * Container for one swerve module. Wraps two falcon500s: one for driving and
- * one for steering.
- * 
+ * Container for one swerve module. Wraps two falcon500s: one for driving and one for steering.
+ *
  * @author 2141 Spartonics
  */
 public class QuailSwerveModule extends SwerveModuleBase {
-	/** The PID id used to determine what PID settings to use. */
-	/** The motor controlling the module's movement. */
-	public final CANSparkMax drivingMotor;
-	/** The motor controlling the module's rotation. */
-	public final CANSparkMax steeringMotor;
-	/** The can coder measuring the module's absolute rotaiton. */
-	private final AnalogEncoder analogEncoder;
-	/**
-	 * The can coder's rotational offset. This value must be manually set through
-	 * phoenix tuner.
-	 */
+  /** The PID id used to determine what PID settings to use. */
+  /** The motor controlling the module's movement. */
+  public final CANSparkMax drivingMotor;
 
-	public final double analogEncoderID;
-	public double analogEncoderOffset;
+  /** The motor controlling the module's rotation. */
+  public final CANSparkMax steeringMotor;
 
-	public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput;
+  /** The can coder measuring the module's absolute rotaiton. */
+  private final AnalogEncoder analogEncoder;
 
-	/**
-	 * @param driveMotor        driving motor ID
-	 * @param steeringMotor     steering motor ID
-	 * @param canCoder          can coder ID
-	 * @param rotationDirection the steering motor's rotational direction, usually
-	 *                          perpendicular to the center of the robot
-	 * @param canCoderOffset    the can coder's rotational offset
-	 */
+  /** The can coder's rotational offset. This value must be manually set through phoenix tuner. */
+  public final double analogEncoderID;
 
-	public QuailSwerveModule(Vec2d position, int driveMotorID, int steeringMotorID, int analogEncoderID,
-			double analogEncoderOffset) {
-		// Call the super constructor.
-		super(position, Constants.steeringRatio, Constants.driveRatio, true);
+  public double analogEncoderOffset;
 
-		this.analogEncoderOffset = analogEncoderOffset;
-		this.analogEncoderID = analogEncoderID;
+  public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput;
 
-		// Initialize the motors and encoder.
-		this.drivingMotor = new CANSparkMax(driveMotorID, MotorType.kBrushless);
-		this.steeringMotor = new CANSparkMax(steeringMotorID, MotorType.kBrushless);
-		this.analogEncoder = new AnalogEncoder(analogEncoderID);
+  /**
+   * @param driveMotor driving motor ID
+   * @param steeringMotor steering motor ID
+   * @param canCoder can coder ID
+   * @param rotationDirection the steering motor's rotational direction, usually perpendicular to
+   *     the center of the robot
+   * @param canCoderOffset the can coder's rotational offset
+   */
+  public QuailSwerveModule(
+      Vec2d position,
+      int driveMotorID,
+      int steeringMotorID,
+      int analogEncoderID,
+      double analogEncoderOffset) {
+    // Call the super constructor.
+    super(position, Constants.steeringRatio, Constants.driveRatio, true);
 
-		System.out.println("Finished initializing" + this.toString());
-	}
+    this.analogEncoderOffset = analogEncoderOffset;
+    this.analogEncoderID = analogEncoderID;
 
-	/**
-	 * Sets the module's angle to the desired angle.
-	 * TODO: Bernie thinks this is a no-op
-	 */
-	public void reset() {
-		// Reset the motor rotations.
-		this.steeringMotor.getEncoder().setPosition(getAbsoluteEncoderAngle() * Constants.steeringRatio);
-		this.currentAngle = (getAbsoluteEncoderAngle() * Constants.TWO_PI);
+    // Initialize the motors and encoder.
+    this.drivingMotor = new CANSparkMax(driveMotorID, MotorType.kBrushless);
+    this.steeringMotor = new CANSparkMax(steeringMotorID, MotorType.kBrushless);
+    this.analogEncoder = new AnalogEncoder(analogEncoderID);
 
-		// TODO(Marcus): Should reset set the motor? I feel like reset shouldn't cause
-		// any motion
-		this.setAngle(this.currentAngle);
+    System.out.println("Finished initializing" + this.toString());
+  }
 
-		// TODO(Marcus): I think it's worth finding out why we "need" this in reset
-		// I know we talked about the pid configuration changing during runtime, I feel
-		// like we should dig into that
-		// and solve that problem instead of band-aiding it here
-		SparkPIDController pidController = this.steeringMotor.getPIDController();
-		kP = 0.2;
-		kI = 0.00;
-		kD = 0.00;
-		kIz = 0;
-		kFF = 0.000;
-		kMaxOutput = 1;
-		kMinOutput = -1;
+  /** Sets the module's angle to the desired angle. TODO: Bernie thinks this is a no-op */
+  public void reset() {
+    // Reset the motor rotations.
+    this.steeringMotor
+        .getEncoder()
+        .setPosition(getAbsoluteEncoderAngle() * Constants.steeringRatio);
+    this.currentAngle = (getAbsoluteEncoderAngle() * Constants.TWO_PI);
 
-		pidController.setP(kP);
-		pidController.setI(kI);
-		pidController.setD(kD);
-		pidController.setIZone(kIz);
-		pidController.setFF(kFF);
-		pidController.setOutputRange(kMinOutput, kMaxOutput);
-		this.steeringMotor.setInverted(false);
-		this.steeringMotor.setIdleMode(IdleMode.kBrake);
-		this.drivingMotor.setIdleMode(IdleMode.kBrake);
-		this.drivingMotor.setInverted(true);
-		this.drivingMotor.burnFlash();
-		this.steeringMotor.burnFlash();
-	}
+    // TODO(Marcus): Should reset set the motor? I feel like reset shouldn't cause
+    // any motion
+    this.setAngle(this.currentAngle);
 
-	// returns rotations, 0 is x axis
-	public double getAbsoluteEncoderAngle() {
-		double currentPos = this.analogEncoder.getAbsolutePosition() - this.analogEncoderOffset;
-		currentPos = (currentPos + 1) % 1;
-		return currentPos;
-	}
+    // TODO(Marcus): I think it's worth finding out why we "need" this in reset
+    // I know we talked about the pid configuration changing during runtime, I feel
+    // like we should dig into that
+    // and solve that problem instead of band-aiding it here
+    SparkPIDController pidController = this.steeringMotor.getPIDController();
+    kP = 0.2;
+    kI = 0.00;
+    kD = 0.00;
+    kIz = 0;
+    kFF = 0.000;
+    kMaxOutput = 1;
+    kMinOutput = -1;
 
-	/**
-	 * Returns the steering motor's angle without any modifications.
-	 * 
-	 * @return The steering motor's rotation in rotations (-1 to 1)
-	 */
-	public double getRawAbsoluteEncoderAngle() {
-		return this.analogEncoder.getAbsolutePosition();
-	}
+    pidController.setP(kP);
+    pidController.setI(kI);
+    pidController.setD(kD);
+    pidController.setIZone(kIz);
+    pidController.setFF(kFF);
+    pidController.setOutputRange(kMinOutput, kMaxOutput);
+    this.steeringMotor.setInverted(false);
+    this.steeringMotor.setIdleMode(IdleMode.kBrake);
+    this.drivingMotor.setIdleMode(IdleMode.kBrake);
+    this.drivingMotor.setInverted(true);
+    this.drivingMotor.burnFlash();
+    this.steeringMotor.burnFlash();
+  }
 
-	/**
-	 * Returns the steering motor's angle in radians.
-	 * Fetches the velocity in RPM from the motor and converts it to radians per
-	 * second.
-	 * 
-	 * @return The steering motor's rotation in radians per second
-	 */
-	public Vec2d getCurrentMovement() {
-		double speed = this.drivingMotor.getEncoder().getVelocity();
-		speed = speed / 60; // convert to seconds
-		speed = speed / Constants.driveRatio; // convert to real wheel rotations
-		speed = speed * Constants.wheelDiameter * Math.PI;
-		return new Vec2d(this.getAbsoluteEncoderAngle() * Constants.TWO_PI, speed, false);
-	}
+  // returns rotations, 0 is x axis
+  public double getAbsoluteEncoderAngle() {
+    double currentPos = this.analogEncoder.getAbsolutePosition() - this.analogEncoderOffset;
+    currentPos = (currentPos + 1) % 1;
+    return currentPos;
+  }
 
-	// @marcus: can you write a docstring here? I'm not sure what this does
-	@Override
-	public void setRawAngle(double angle) {
-		this.steeringMotor.getPIDController().setReference((angle / (2 * Math.PI)) * 12.8,
-				CANSparkMax.ControlType.kPosition);
-	}
+  /**
+   * Returns the steering motor's angle without any modifications.
+   *
+   * @return The steering motor's rotation in rotations (-1 to 1)
+   */
+  public double getRawAbsoluteEncoderAngle() {
+    return this.analogEncoder.getAbsolutePosition();
+  }
 
-	@Override
-	public void setRawSpeed(double speed) {
-		this.drivingMotor.set(speed);
-	}
+  /**
+   * Returns the steering motor's angle in radians. Fetches the velocity in RPM from the motor and
+   * converts it to radians per second.
+   *
+   * @return The steering motor's rotation in radians per second
+   */
+  public Vec2d getCurrentMovement() {
+    double speed = this.drivingMotor.getEncoder().getVelocity();
+    speed = speed / 60; // convert to seconds
+    speed = speed / Constants.driveRatio; // convert to real wheel rotations
+    speed = speed * Constants.wheelDiameter * Math.PI;
+    return new Vec2d(this.getAbsoluteEncoderAngle() * Constants.TWO_PI, speed, false);
+  }
 
-	/**
-	 * Getter for the drive motor.
-	 * 
-	 * @return The drive motor
-	 */
-	public CANSparkMax getDriveMotor() {
-		return this.drivingMotor;
-	}
+  // @marcus: can you write a docstring here? I'm not sure what this does
+  @Override
+  public void setRawAngle(double angle) {
+    this.steeringMotor
+        .getPIDController()
+        .setReference((angle / (2 * Math.PI)) * 12.8, CANSparkMax.ControlType.kPosition);
+  }
 
-	/**
-	 * Getter for the steering motor.
-	 * 
-	 * @return The steering motor.
-	 */
-	public CANSparkMax getSteeringMotor() {
-		return this.steeringMotor;
-	}
+  @Override
+  public void setRawSpeed(double speed) {
+    this.drivingMotor.set(speed);
+  }
 
-	@Override
-	public String toString() {
-		// The class will be represented as "SwerveModule[Steering Motor ID = ?, Driving
-		// Motor ID = ?, Cancoder ID = ?]"
-		return "SwerveModule[Steering Motor ID = " + this.steeringMotor.getDeviceId() + ", Driving Motor ID = "
-				+ this.drivingMotor.getDeviceId() + ", Cancoder ID = " + this.analogEncoderID + "]";
-	}
+  /**
+   * Getter for the drive motor.
+   *
+   * @return The drive motor
+   */
+  public CANSparkMax getDriveMotor() {
+    return this.drivingMotor;
+  }
 
+  /**
+   * Getter for the steering motor.
+   *
+   * @return The steering motor.
+   */
+  public CANSparkMax getSteeringMotor() {
+    return this.steeringMotor;
+  }
+
+  @Override
+  public String toString() {
+    // The class will be represented as "SwerveModule[Steering Motor ID = ?, Driving
+    // Motor ID = ?, Cancoder ID = ?]"
+    return "SwerveModule[Steering Motor ID = "
+        + this.steeringMotor.getDeviceId()
+        + ", Driving Motor ID = "
+        + this.drivingMotor.getDeviceId()
+        + ", Cancoder ID = "
+        + this.analogEncoderID
+        + "]";
+  }
 }

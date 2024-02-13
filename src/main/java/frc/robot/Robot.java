@@ -9,14 +9,10 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
-
 /**
- * The VM is configured to automatically run this class, and to call the
- * functions corresponding to
- * each mode, as described in the TimedRobot documentation. If you change the
- * name of this class or
- * the package after creating this project, you must also update the
- * build.gradle file in the
+ * The VM is configured to automatically run this class, and to call the functions corresponding to
+ * each mode, as described in the TimedRobot documentation. If you change the name of this class or
+ * the package after creating this project, you must also update the build.gradle file in the
  * project.
  */
 public class Robot extends TimedRobot {
@@ -35,13 +31,10 @@ public class Robot extends TimedRobot {
   }
 
   /**
-   * This function is called every 20 ms, no matter the mode. Use this for items
-   * like diagnostics
+   * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
    * that you want ran during disabled, autonomous, teleoperated and test.
    *
-   * <p>
-   * This runs after the mode specific periodic functions, but before LiveWindow
-   * and
+   * <p>This runs after the mode specific periodic functions, but before LiveWindow and
    * SmartDashboard integrated updating.
    */
   @Override
@@ -58,48 +51,45 @@ public class Robot extends TimedRobot {
     // ArrayList<Vec2d> moduleSpeeds = drivetrain.getModuleSpeeds();
     // RobotMovement robotMovement = odometry.calculateFastOdometry(moduleSpeeds);
 
-    // Vec2d deltaTranslation = robotMovement.translation.scale(0.02).rotate(this.gyro.getAngle(), true);
+    // Vec2d deltaTranslation = robotMovement.translation.scale(0.02).rotate(this.gyro.getAngle(),
+    // true);
 
     // this.odometry.updateDeltaPoseEstimate(deltaTranslation);
 
     // odometry.setAngle(-gyro.getAngle() * Constants.DEG_TO_RAD);
-    
+
     // this.odometry.setAngle(this.gyro.getAngle());
 
     // SmartDashboard.putNumber("x", this.odometry.x);
     // SmartDashboard.putNumber("y", this.odometry.y);
 
     // if (controller.getBButtonPressed()){
-		// 	odometry.setPose(new Pose2d(0,0,0));
-		// }
+    // 	odometry.setPose(new Pose2d(0,0,0));
+    // }
     // if (controller.getYButtonPressed()){
     //   this.gyro.reset();
     // }
 
-		// double[] pos = NetworkTableInstance.getDefault().getTable("limelight").getEntry("botpose").getDoubleArray(new double[6]);
-		// SmartDashboard.putNumberArray("Limelight Pos", pos);
-		// SmartDashboard.putNumber("LX", -pos[1] * Constants.METERS_TO_INCHES);
-		// SmartDashboard.putNumber("LY", pos[0] * Constants.METERS_TO_INCHES);
+    // double[] pos =
+    // NetworkTableInstance.getDefault().getTable("limelight").getEntry("botpose").getDoubleArray(new double[6]);
+    // SmartDashboard.putNumberArray("Limelight Pos", pos);
+    // SmartDashboard.putNumber("LX", -pos[1] * Constants.METERS_TO_INCHES);
+    // SmartDashboard.putNumber("LY", pos[0] * Constants.METERS_TO_INCHES);
 
-		// if(pos[0] != 0 && pos[1] != 0){
-		// 	odometry.setPose(new Pose2d(-pos[1]* Constants.METERS_TO_INCHES, pos[0]* Constants.METERS_TO_INCHES, -this.gyro.getAngle() * Constants.DEG_TO_RAD));
-		// }
+    // if(pos[0] != 0 && pos[1] != 0){
+    // 	odometry.setPose(new Pose2d(-pos[1]* Constants.METERS_TO_INCHES, pos[0]*
+    // Constants.METERS_TO_INCHES, -this.gyro.getAngle() * Constants.DEG_TO_RAD));
+    // }
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
-  public void disabledInit() {
-
-  }
+  public void disabledInit() {}
 
   @Override
-  public void disabledPeriodic() {
-  }
+  public void disabledPeriodic() {}
 
-  /**
-   * This autonomous runs the autonomous command selected by your
-   * {@link RobotContainer} class.
-   */
+  /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
     // Get the autonomous command from the container
@@ -113,8 +103,7 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during autonomous. */
   @Override
-  public void autonomousPeriodic() {
-  }
+  public void autonomousPeriodic() {}
 
   @Override
   public void teleopInit() {
@@ -126,8 +115,8 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
 
-		// driveCommand dt = new driveCommand(primaryController, gyro, drivetrain);
-		// CommandScheduler.getInstance().schedule(dt);
+    // driveCommand dt = new driveCommand(primaryController, gyro, drivetrain);
+    // CommandScheduler.getInstance().schedule(dt);
   }
 
   /** This function is called periodically during operator control. */
@@ -162,7 +151,5 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during test mode. */
   @Override
-  public void testPeriodic() {
-
-  }
+  public void testPeriodic() {}
 }

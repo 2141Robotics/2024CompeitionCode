@@ -4,27 +4,24 @@
 
 package frc.robot.subsystems;
 
-import frc.robot.Constants;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import com.mineinjava.quail.RobotMovement;
 import com.mineinjava.quail.localization.SwerveOdometry;
 import com.mineinjava.quail.pathing.PathFollower;
 import com.mineinjava.quail.util.MiniPID;
 import com.mineinjava.quail.util.geometry.Pose2d;
 import com.mineinjava.quail.util.geometry.Vec2d;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.components.GyroModule;
 import frc.robot.components.QuailSwerveDrive;
 import frc.robot.components.QuailSwerveModule;
+import java.util.ArrayList;
+import java.util.List;
 
 public class QuailDriveTrain extends SubsystemBase {
 
@@ -51,10 +48,10 @@ public class QuailDriveTrain extends SubsystemBase {
   public QuailDriveTrain() {
     // Setup all of our swerve modules
     // TODO: Move to constants
-    modules.add(new QuailSwerveModule(new Vec2d(13, 13), 1, 2, 0, 0.443-0.25));
-    modules.add(new QuailSwerveModule(new Vec2d(13, -13), 3, 4, 1, 0.425-0.25));
-    modules.add(new QuailSwerveModule(new Vec2d(-13, -13), 5, 6, 2, 0.062-0.25));
-    modules.add(new QuailSwerveModule(new Vec2d(-13, 13), 7, 8, 3, 0.359-0.25));
+    modules.add(new QuailSwerveModule(new Vec2d(13, 13), 1, 2, 0, 0.443 - 0.25));
+    modules.add(new QuailSwerveModule(new Vec2d(13, -13), 3, 4, 1, 0.425 - 0.25));
+    modules.add(new QuailSwerveModule(new Vec2d(-13, -13), 5, 6, 2, 0.062 - 0.25));
+    modules.add(new QuailSwerveModule(new Vec2d(-13, 13), 7, 8, 3, 0.359 - 0.25));
 
     // Initialize an underlying Quail drive train + odo
     driveTrain = new QuailSwerveDrive(gyro, modules);
@@ -79,9 +76,8 @@ public class QuailDriveTrain extends SubsystemBase {
   }
 
   /**
-   * Return the Quail swerve drive object.
-   * Deprecated: move to use quaildrivetrain w/ commands
-   * 
+   * Return the Quail swerve drive object. Deprecated: move to use quaildrivetrain w/ commands
+   *
    * @return the Quail swerve drive object
    */
   @Deprecated
@@ -91,7 +87,7 @@ public class QuailDriveTrain extends SubsystemBase {
 
   /**
    * Retruns the Quail odometry object
-   * 
+   *
    * @return the Quail odometry object
    */
   public SwerveOdometry getOdometry() {
@@ -100,16 +96,14 @@ public class QuailDriveTrain extends SubsystemBase {
 
   /**
    * Get gyro
-   * 
+   *
    * @return the gyro
    */
   public GyroModule getGyro() {
     return gyro;
   }
 
-  /**
-   * Stops the drive train (all modules steering + driving)
-   */
+  /** Stops the drive train (all modules steering + driving) */
   public void stop() {
     for (QuailSwerveModule module : this.modules) {
       module.steeringMotor.stopMotor();
@@ -117,9 +111,7 @@ public class QuailDriveTrain extends SubsystemBase {
     }
   }
 
-  /**
-   * Resets the drive train gyro
-   */
+  /** Resets the drive train gyro */
   public void resetGyro() {
     this.gyro.reset();
   }
@@ -130,29 +122,35 @@ public class QuailDriveTrain extends SubsystemBase {
 
   /**
    * Command: Stop the drive train
-   * 
+   *
    * @return the command to stop the drive train
    */
   public Command stopCommand() {
-    return this.runOnce(() -> {
-      this.stop();
-    });
+    return this.runOnce(
+        () -> {
+          this.stop();
+        });
   }
 
-  public Command resetModulesCommand(){
-    return this.runOnce(() -> {this.resetModules();});
+  public Command resetModulesCommand() {
+    return this.runOnce(
+        () -> {
+          this.resetModules();
+        });
   }
 
-  public Command resetGyroCommand(){
-    return this.runOnce(() -> {this.resetGyro();});
+  public Command resetGyroCommand() {
+    return this.runOnce(
+        () -> {
+          this.resetGyro();
+        });
   }
 
   /**
-   * Command: Move the drive train
-   * TODO: move control logic to here and just have quail do math
+   * Command: Move the drive train TODO: move control logic to here and just have quail do math
    * (This is a mirror of the QuailSwerveDrive.move() method)
-   * 
-   * @param movement   the movement to make
+   *
+   * @param movement the movement to make
    * @param gyroOffset the gyro offset
    * @return the command to move the drive train
    */
@@ -166,29 +164,30 @@ public class QuailDriveTrain extends SubsystemBase {
   // Telemetry
   /////////////////////////////////////////////////////////////////////////////
 
-  /**
-   * Periodically update the odometry for telemetry.
-   */
+  /** Periodically update the odometry for telemetry. */
   @Override
   public void periodic() {
     // Update our telemetry data
     for (int i = 0; i < modules.size(); i++) {
       absoluteEncoderValues.set(i, modules.get(i).getAbsoluteEncoderAngle());
-      motorEncoderValues.set(i, modules.get(i).steeringMotor.getEncoder().getPosition() / Constants.GEAR_RATIO_SWERVE);
+      motorEncoderValues.set(
+          i, modules.get(i).steeringMotor.getEncoder().getPosition() / Constants.GEAR_RATIO_SWERVE);
       encoderRawValues.set(i, modules.get(i).getRawAbsoluteEncoderAngle());
     }
     ArrayList<Vec2d> moduleSpeeds = this.driveTrain.getModuleSpeeds();
     RobotMovement velocity = this.odometry.calculateFastOdometry(moduleSpeeds);
 
-    this.odometry.updateDeltaPoseEstimate(velocity.translation.scale(Constants.LOOPTIME).rotate(-this.gyro.getAngleDegrees(), true));
-    this.odometry.setAngle(this.gyro.getAngleRadians());
+    this.odometry.updateDeltaPoseEstimate(
+        velocity.translation.scale(Constants.LOOPTIME).rotate(this.gyro.getAngleDegrees(), true));
+    this.odometry.setAngle(-this.gyro.getAngleRadians());
 
-    field.setRobotPose(this.odometry.y / Constants.INCHES_PER_METER, -this.odometry.x / Constants.INCHES_PER_METER, new Rotation2d(this.odometry.theta));
+    field.setRobotPose(
+        this.odometry.y / Constants.INCHES_PER_METER,
+        -this.odometry.x / Constants.INCHES_PER_METER,
+        new Rotation2d(this.odometry.theta));
   }
 
-  /**
-   * Create the telemetry for the drive train.
-   */
+  /** Create the telemetry for the drive train. */
   @Override
   public void initSendable(SendableBuilder builder) {
     // Add telemetry data for each module in the drive train
@@ -202,7 +201,6 @@ public class QuailDriveTrain extends SubsystemBase {
     builder.addDoubleProperty("Motor Encoder 1", () -> motorEncoderValues.get(1), null);
     builder.addDoubleProperty("Motor Encoder 2", () -> motorEncoderValues.get(2), null);
     builder.addDoubleProperty("Motor Encoder 3", () -> motorEncoderValues.get(3), null);
-
 
     builder.addDoubleProperty("raw Encoder 0", () -> encoderRawValues.get(0), null);
     builder.addDoubleProperty("raw Encoder 1", () -> encoderRawValues.get(1), null);

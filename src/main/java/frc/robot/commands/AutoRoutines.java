@@ -1,15 +1,12 @@
 package frc.robot.commands;
 
-import java.util.ArrayList;
-
 import com.mineinjava.quail.util.geometry.Pose2d;
-
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.components.GyroModule;
 import frc.robot.subsystems.QuailDriveTrain;
+import java.util.ArrayList;
 
 public final class AutoRoutines {
 
@@ -35,12 +32,7 @@ public final class AutoRoutines {
     points.add(new Pose2d(36, 72, Math.PI/4));
     points.add(new Pose2d(0, 0, 0));
 
-    return Commands.sequence(
-        Commands.runOnce(() -> {
-          gyro.reset();
-        }),
-        this.driveTrain.resetModulesCommand(),
-        new RunPath(this.driveTrain, points));
+    return Commands.parallel(new RunPath(this.driveTrain, points));
   }
 
   public Command driveForward10Feet() {
@@ -48,12 +40,13 @@ public final class AutoRoutines {
     points.add(new Pose2d(0, 0, 0));
     points.add(new Pose2d(0, 10, 0));
 
-    return Commands.parallel(
-        new RunPath(this.driveTrain, points));
+    return Commands.parallel(new RunPath(this.driveTrain, points));
   }
 
   /**
-   * TODO: This right now has a bug since the initial pose is set when the command is created. We need to set the pose when the command is run.
+   * TODO: This right now has a bug since the initial pose is set when the command is created. We
+   * need to set the pose when the command is run.
+   *
    * @return
    */
   public Command driveToPose() {
@@ -63,14 +56,12 @@ public final class AutoRoutines {
     double y = targetPoseY.getDouble(0);
     System.out.println("Moving in auto to pose: " + x + " , " + y);
     double heading = targetPoseHeading.getDouble(0);
-    //points.add(driveTrain.odometry.getPose());
+    // points.add(driveTrain.odometry.getPose());
     points.add(new Pose2d(x, y, heading));
-
 
     return Commands.sequence(
         this.driveTrain.resetGyroCommand(),
         this.driveTrain.resetModulesCommand(),
         new RunPath(this.driveTrain, points));
   }
-
 }
