@@ -8,6 +8,7 @@ import frc.robot.commands.AutoRoutines;
 import frc.robot.commands.ManualDrive;
 import frc.robot.components.GyroModule;
 import frc.robot.subsystems.QuailDriveTrain;
+import frc.robot.subsystems.ServoController;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -41,6 +42,8 @@ public class RobotContainer {
 
   // All auto routines
   private final AutoRoutines m_autoRoutines = new AutoRoutines(s_DriveTrain, m_gyro);
+
+  private final ServoController servoController = new ServoController();
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -94,6 +97,11 @@ public class RobotContainer {
     // Make the default command for the drive train the drive command
     m_driverController.back().onTrue(Commands.runOnce(() -> {
               m_gyro.reset();}));
+
+    m_driverController.a().onTrue(this.servoController.setEnableShooting());
+    m_driverController.b().onTrue(this.servoController.setDisableShooting());
+
+    m_driverController.y().onTrue(this.s_DriveTrain.resetOdometry());
 
     m_driverController.start().onTrue(s_DriveTrain.resetModulesCommand());
     s_DriveTrain.setDefaultCommand(new ManualDrive(m_driverController, m_gyro, s_DriveTrain));

@@ -24,16 +24,16 @@ public class RunPath extends Command {
         this.drivetrain = drivetrain;
 
         // TODO: Put units on these
-        ConstraintsPair translationPair = new ConstraintsPair(10, 10);
-        ConstraintsPair rotationPair = new ConstraintsPair(0.1, 1);
+        ConstraintsPair translationPair = new ConstraintsPair(30, 60);
+        ConstraintsPair rotationPair = new ConstraintsPair(0.5, 1);
 
         // TODO: Move to constants + tune
-        this.pidController = new MiniPID(0.1, 0.0, 0.0);
+        this.pidController = new MiniPID(6.5, 0.0, 0.2);
         this.pidController.setF(0);
-        ;
+        
 
         this.pathfollower = new PathFollower(this.drivetrain.getOdometry(), this.path, translationPair, rotationPair,
-                this.pidController, 3, 4, 1, 15);
+                this.pidController, 1, 5, 1, 15);
 
         addRequirements(drivetrain);
 

@@ -72,7 +72,7 @@ public class ManualDrive extends Command{
 		}
 		else {
 			RobotMovement movement = new RobotMovement(rightStickVector.x / 35, newDriveVector);
-			driveTrain.move(movement,  -(this.gyro.getAngleRadians()));
+			driveTrain.move(movement,  (this.gyro.getAngleRadians()));
 		}
     }
 

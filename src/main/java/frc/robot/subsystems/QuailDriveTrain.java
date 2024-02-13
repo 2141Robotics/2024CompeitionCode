@@ -14,6 +14,7 @@ import com.mineinjava.quail.RobotMovement;
 import com.mineinjava.quail.localization.SwerveOdometry;
 import com.mineinjava.quail.pathing.PathFollower;
 import com.mineinjava.quail.util.MiniPID;
+import com.mineinjava.quail.util.geometry.Pose2d;
 import com.mineinjava.quail.util.geometry.Vec2d;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -120,6 +121,10 @@ public class QuailDriveTrain extends SubsystemBase {
     return this.runOnce(() -> this.driveTrain.calibrateAbosoluteEncoders());
   }
 
+  public Command resetOdometry() {
+    return this.runOnce(() -> this.odometry.setPose(new Pose2d(0,0,0)));
+  }
+
   /**
    * Command: Stop the drive train
    * 
@@ -164,8 +169,8 @@ public class QuailDriveTrain extends SubsystemBase {
     ArrayList<Vec2d> moduleSpeeds = this.driveTrain.getModuleSpeeds();
     RobotMovement velocity = this.odometry.calculateFastOdometry(moduleSpeeds);
 
-    this.odometry.updateDeltaPoseEstimate(velocity.translation.scale(Constants.LOOPTIME).rotate(this.gyro.getAngleDegrees(), true));
-    this.odometry.setAngle(-this.gyro.getAngleRadians());
+    this.odometry.updateDeltaPoseEstimate(velocity.translation.scale(Constants.LOOPTIME).rotate(-this.gyro.getAngleDegrees(), true));
+    this.odometry.setAngle(this.gyro.getAngleRadians());
 
     field.setRobotPose(this.odometry.y / Constants.INCHES_PER_METER, -this.odometry.x / Constants.INCHES_PER_METER, new Rotation2d(this.odometry.theta));
   }
