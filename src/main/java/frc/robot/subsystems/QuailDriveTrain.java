@@ -9,7 +9,6 @@ import frc.robot.Constants;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.kauailabs.navx.frc.AHRS;
 import com.mineinjava.quail.RobotMovement;
 import com.mineinjava.quail.localization.SwerveOdometry;
 import com.mineinjava.quail.pathing.PathFollower;
@@ -36,7 +35,7 @@ public class QuailDriveTrain extends SubsystemBase {
   public PathFollower pathFollower;
   public MiniPID pidcontroller;
 
-  private final GyroModule gyro;
+  private final GyroModule gyro = new GyroModule();
 
   private final Field2d field = new Field2d();
 
@@ -48,7 +47,7 @@ public class QuailDriveTrain extends SubsystemBase {
   public ArrayList<Double> motorEncoderValues = new ArrayList<Double>();
   public ArrayList<Double> encoderRawValues = new ArrayList<Double>();
 
-  public QuailDriveTrain(GyroModule gyro) {
+  public QuailDriveTrain() {
     // Setup all of our swerve modules
     // TODO: Move to constants
     modules.add(new QuailSwerveModule(new Vec2d(13, 13), 1, 2, 0, 0.443-0.25));
@@ -60,8 +59,6 @@ public class QuailDriveTrain extends SubsystemBase {
     driveTrain = new QuailSwerveDrive(gyro, modules);
     odometry = new SwerveOdometry(driveTrain);
 
-    this.gyro = gyro;
-
     // Initialize arrays for tracking position, velocity, and acceleration
     for (int i = 0; i < modules.size(); i++) {
       absoluteEncoderValues.add(0.0);
@@ -69,16 +66,15 @@ public class QuailDriveTrain extends SubsystemBase {
       encoderRawValues.add(0.0);
     }
     Shuffleboard.getTab("DriveTrain").add(this.field);
+
+    // Reset the gyro
+    gyro.reset();
   }
 
   public void resetModules() {
     for (QuailSwerveModule module : this.modules) {
       module.reset();
     }
-  }
-
-  public Command resetModulesCommand(){
-    return this.runOnce(() -> {this.resetModules();});
   }
 
   /**
@@ -101,24 +97,35 @@ public class QuailDriveTrain extends SubsystemBase {
     return odometry;
   }
 
+  /**
+   * Get gyro
+   * 
+   * @return the gyro
+   */
+  public GyroModule getGyro() {
+    return gyro;
+  }
+
+  /**
+   * Stops the drive train (all modules steering + driving)
+   */
   public void stop() {
     for (QuailSwerveModule module : this.modules) {
-      module.drivingMotor.set(0);
+      module.steeringMotor.stopMotor();
+      module.drivingMotor.stopMotor();
     }
+  }
+
+  /**
+   * Resets the drive train gyro
+   */
+  public void resetGyro() {
+    this.gyro.reset();
   }
 
   /////////////////////////////////////////////////////////////////////////////
   // Commands
   /////////////////////////////////////////////////////////////////////////////
-
-  /**
-   * Command: Reset the absolute encoders for all swerve modules
-   * 
-   * @return the command to reset the absolute encoders
-   */
-  public Command resetAbsoluteEncoders() {
-    return this.runOnce(() -> this.driveTrain.calibrateAbosoluteEncoders());
-  }
 
   /**
    * Command: Stop the drive train
@@ -129,6 +136,14 @@ public class QuailDriveTrain extends SubsystemBase {
     return this.runOnce(() -> {
       this.stop();
     });
+  }
+
+  public Command resetModulesCommand(){
+    return this.runOnce(() -> {this.resetModules();});
+  }
+
+  public Command resetGyroCommand(){
+    return this.runOnce(() -> {this.resetGyro();});
   }
 
   /**
@@ -168,10 +183,6 @@ public class QuailDriveTrain extends SubsystemBase {
     this.odometry.setAngle(-this.gyro.getAngleRadians());
 
     field.setRobotPose(this.odometry.y / Constants.INCHES_PER_METER, -this.odometry.x / Constants.INCHES_PER_METER, new Rotation2d(this.odometry.theta));
-  }
-
-  public boolean test() {
-    return true;
   }
 
   /**
