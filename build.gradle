@@ -113,7 +113,7 @@ tasks.withType(JavaCompile) {
 // https://docs.wpilib.org/en/stable/docs/software/advanced-gradlerio/code-formatting.html
 spotless {
     java {
-        target fileTree('.') {
+        target fileTree('src') {
             include '**/*.java'
             exclude '**/build/**', '**/build-*/**'
         }
@@ -144,7 +144,7 @@ spotless {
         endWithNewline()
     }
     format 'misc', {
-        target fileTree('.') {
+        target fileTree('src') {
             include '**/*.md', '**/.gitignore'
             exclude '**/build/**', '**/build-*/**'
         }
