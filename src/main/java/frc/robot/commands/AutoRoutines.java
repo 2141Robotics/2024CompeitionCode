@@ -27,9 +27,9 @@ public final class AutoRoutines {
   public Command defaultAuto() {
     ArrayList<Pose2d> points = new ArrayList<Pose2d>();
     points.add(new Pose2d(0, 0, 0));
-    points.add(new Pose2d(0, 36, Math.PI/4));
-    points.add(new Pose2d(-36, 36, Math.PI/2));
-    points.add(new Pose2d(36, 72, Math.PI/4));
+    points.add(new Pose2d(0, 36, Math.PI / 4));
+    points.add(new Pose2d(-36, 36, Math.PI / 2));
+    points.add(new Pose2d(36, 72, Math.PI / 4));
     points.add(new Pose2d(0, 0, 0));
 
     return Commands.parallel(new RunPath(this.driveTrain, points));
