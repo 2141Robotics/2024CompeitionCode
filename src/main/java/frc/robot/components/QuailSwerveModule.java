@@ -7,13 +7,14 @@ import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.wpilibj.AnalogEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 
 /**
  * Container for one swerve module. Wraps two falcon500s: one for driving and one for steering.
- * 
+ * // TODO(Dream team): plot the motors raw encoder value + filtered value on the dashboard
  * @author 2141 Spartonics
  */
 public class QuailSwerveModule extends SwerveModuleBase
@@ -26,6 +27,8 @@ public class QuailSwerveModule extends SwerveModuleBase
 	/** The can coder measuring the module's absolute rotaiton. */
 	private final AnalogEncoder analogEncoder;
 	/** The can coder's rotational offset. This value must be manually set through phoenix tuner. */
+	private final LinearFilter filter;
+	/** Filter responsible for smoothing out encoder values */
 
 	public final double analogEncoderID;
 	public double analogEncoderOffset;
@@ -50,6 +53,7 @@ public class QuailSwerveModule extends SwerveModuleBase
 		this.analogEncoderOffset = analogEncoderOffset;
 		this.analogEncoderID = analogEncoderID;
 		this.steeringMotor.restoreFactoryDefaults();
+		this.filter = LinearFilter.movingAverage(5);
 
 		System.out.println("Finished initializing" + this.toString());
 		this.reset();
@@ -101,9 +105,19 @@ public class QuailSwerveModule extends SwerveModuleBase
 
 	// returns rotations, 0 is x axis
 	public double getAbsoluteEncoderAngle() {
-		double currentPos = this.analogEncoder.getAbsolutePosition() - this.analogEncoderOffset;
+		double currentPos = this.getFilteredAbsoluteEncoder() - this.analogEncoderOffset;
 		currentPos = (currentPos + 1) % 1;
 		return currentPos;
+	}
+
+
+	/**
+	 * Filters data from Analog Encoder, using the WPILIB movingAverage filter
+	 * https://docs.wpilib.org/en/stable/docs/software/advanced-controls/filters/linear-filter.html
+	 * @return
+	 */
+	public double getFilteredAbsoluteEncoder() {
+		return filter.calculate(this.getRawAbsoluteEncoderAngle());
 	}
 
 	/**

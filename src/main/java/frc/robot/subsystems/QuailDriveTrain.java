@@ -48,6 +48,7 @@ public class QuailDriveTrain extends SubsystemBase {
   public ArrayList<Double> absoluteEncoderValues = new ArrayList<Double>();
   public ArrayList<Double> motorEncoderValues = new ArrayList<Double>();
   public ArrayList<Double> encoderRawValues = new ArrayList<Double>();
+  public ArrayList<Double> filteredValues = new ArrayList<Double>();
 
   public QuailDriveTrain(GyroModule gyro) {
     // Setup all of our swerve modules
@@ -68,6 +69,7 @@ public class QuailDriveTrain extends SubsystemBase {
       absoluteEncoderValues.add(0.0);
       motorEncoderValues.add(0.0);
       encoderRawValues.add(0.0);
+      filteredValues.add(0.0);
     }
     Shuffleboard.getTab("DriveTrain").add(this.field);
   }
@@ -165,6 +167,7 @@ public class QuailDriveTrain extends SubsystemBase {
       absoluteEncoderValues.set(i, modules.get(i).getAbsoluteEncoderAngle());
       motorEncoderValues.set(i, modules.get(i).steeringMotor.getEncoder().getPosition() / Constants.GEAR_RATIO_SWERVE);
       encoderRawValues.set(i, modules.get(i).getRawAbsoluteEncoderAngle());
+      filteredValues.set(i, modules.get(i).getFilteredAbsoluteEncoder());
     }
     ArrayList<Vec2d> moduleSpeeds = this.driveTrain.getModuleSpeeds();
     RobotMovement velocity = this.odometry.calculateFastOdometry(moduleSpeeds);
@@ -201,5 +204,10 @@ public class QuailDriveTrain extends SubsystemBase {
     builder.addDoubleProperty("raw Encoder 1", () -> encoderRawValues.get(1), null);
     builder.addDoubleProperty("raw Encoder 2", () -> encoderRawValues.get(2), null);
     builder.addDoubleProperty("raw Encoder 3", () -> encoderRawValues.get(3), null);
+
+    builder.addDoubleProperty("filtered Encoder 0", () -> filteredValues.get(0), null);
+    builder.addDoubleProperty("filtered Encoder 1", () -> filteredValues.get(1), null);
+    builder.addDoubleProperty("filtered Encoder 2", () -> filteredValues.get(2), null);
+    builder.addDoubleProperty("filtered Encoder 3", () -> filteredValues.get(3), null);
   }
 }
