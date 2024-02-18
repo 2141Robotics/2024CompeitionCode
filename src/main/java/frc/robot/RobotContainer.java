@@ -55,7 +55,6 @@ public class RobotContainer {
 
     // Put subsystems on the smart dashboard
     Shuffleboard.getTab("DriveTrain").add("Telemetry", s_DriveTrain);
-    Shuffleboard.getTab("DriveTrain").add("Gyro", s_DriveTrain.getGyro());
 
     // Put auto routines on the smart dashboard
     m_chooser.setDefaultOption("Default Auto", m_autoRoutines.defaultAuto());

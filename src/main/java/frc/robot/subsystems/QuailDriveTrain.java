@@ -46,11 +46,6 @@ public class QuailDriveTrain extends SubsystemBase {
   // TODO(Bernie): move to contsnts
   public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput;
 
-  // Telemetry data
-  public ArrayList<Double> absoluteEncoderValues = new ArrayList<Double>();
-  public ArrayList<Double> motorEncoderValues = new ArrayList<Double>();
-  public ArrayList<Double> encoderRawValues = new ArrayList<Double>();
-
   public QuailDriveTrain() {
     // Setup all of our swerve modules
     // TODO: Move to constants
@@ -63,12 +58,6 @@ public class QuailDriveTrain extends SubsystemBase {
     driveTrain = new QuailSwerveDrive(gyro, modules);
     odometry = new SwerveOdometry(driveTrain);
 
-    // Initialize arrays for tracking position, velocity, and acceleration
-    for (int i = 0; i < modules.size(); i++) {
-      absoluteEncoderValues.add(0.0);
-      motorEncoderValues.add(0.0);
-      encoderRawValues.add(0.0);
-    }
     Shuffleboard.getTab("DriveTrain").add(this.field);
 
     // Reset the gyro
@@ -173,13 +162,6 @@ public class QuailDriveTrain extends SubsystemBase {
   /** Periodically update the odometry for telemetry. */
   @Override
   public void periodic() {
-    // Update our telemetry data
-    for (int i = 0; i < modules.size(); i++) {
-      absoluteEncoderValues.set(i, modules.get(i).getAbsoluteEncoderAngle());
-      motorEncoderValues.set(
-          i, modules.get(i).steeringMotor.getEncoder().getPosition() / Constants.GEAR_RATIO_SWERVE);
-      encoderRawValues.set(i, modules.get(i).getRawAbsoluteEncoderAngle());
-    }
     ArrayList<Vec2d> moduleSpeeds = this.driveTrain.getModuleSpeeds();
     RobotMovement velocity = this.odometry.calculateFastOdometry(moduleSpeeds);
 
@@ -227,21 +209,8 @@ public class QuailDriveTrain extends SubsystemBase {
   /** Create the telemetry for the drive train. */
   @Override
   public void initSendable(SendableBuilder builder) {
-    // Add telemetry data for each module in the drive train
-    // This is a little hacky because of some java constraints
-    builder.addDoubleProperty("Absolute Encoder 0", () -> absoluteEncoderValues.get(0), null);
-    builder.addDoubleProperty("Absolute Encoder 1", () -> absoluteEncoderValues.get(1), null);
-    builder.addDoubleProperty("Absolute Encoder 2", () -> absoluteEncoderValues.get(2), null);
-    builder.addDoubleProperty("Absolute Encoder 3", () -> absoluteEncoderValues.get(3), null);
-
-    builder.addDoubleProperty("Motor Encoder 0", () -> motorEncoderValues.get(0), null);
-    builder.addDoubleProperty("Motor Encoder 1", () -> motorEncoderValues.get(1), null);
-    builder.addDoubleProperty("Motor Encoder 2", () -> motorEncoderValues.get(2), null);
-    builder.addDoubleProperty("Motor Encoder 3", () -> motorEncoderValues.get(3), null);
-
-    builder.addDoubleProperty("raw Encoder 0", () -> encoderRawValues.get(0), null);
-    builder.addDoubleProperty("raw Encoder 1", () -> encoderRawValues.get(1), null);
-    builder.addDoubleProperty("raw Encoder 2", () -> encoderRawValues.get(2), null);
-    builder.addDoubleProperty("raw Encoder 3", () -> encoderRawValues.get(3), null);
+    for (QuailSwerveModule module : modules) {
+      module.initSendable(builder);
+    }
   }
 }

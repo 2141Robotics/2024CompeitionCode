@@ -6,6 +6,7 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.AnalogEncoder;
 import frc.robot.Constants;
 
@@ -111,7 +112,7 @@ public class QuailSwerveModule extends SwerveModuleBase {
    *
    * @return The steering motor's rotation in rotations (-1 to 1)
    */
-  public double getRawAbsoluteEncoderAngle() {
+  private double getRawAbsoluteEncoderAngle() {
     return this.analogEncoder.getAbsolutePosition();
   }
 
@@ -171,5 +172,22 @@ public class QuailSwerveModule extends SwerveModuleBase {
         + ", Cancoder ID = "
         + this.analogEncoderID
         + "]";
+  }
+
+  /**
+   * Create the telemetry for the swerve module.
+   *
+   * @param builder the telemetry builder to add the module's data to
+   */
+  public void initSendable(SendableBuilder builder) {
+    String name = "SwerveModule[" + this.steeringMotor.getDeviceId() + "]";
+
+    builder.addDoubleProperty(name + " Absolute Encoder", () -> getAbsoluteEncoderAngle(), null);
+    builder.addDoubleProperty(
+        name + " Raw Absolute Encoder", () -> getRawAbsoluteEncoderAngle(), null);
+    builder.addDoubleProperty(
+        name + " Motor Encoder",
+        () -> steeringMotor.getEncoder().getPosition() / Constants.GEAR_RATIO_SWERVE,
+        null);
   }
 }
