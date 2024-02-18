@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.AutoRoutines;
 import frc.robot.commands.ManualDrive;
 import frc.robot.commands.RunPath;
+import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.QuailDriveTrain;
 import java.util.ArrayList;
 
@@ -27,6 +28,7 @@ import java.util.ArrayList;
 public class RobotContainer {
   // Initialize all subsystems
   private final QuailDriveTrain s_DriveTrain = new QuailDriveTrain();
+  private final Intake s_Intake = new Intake();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
@@ -87,6 +89,14 @@ public class RobotContainer {
     // m_driverController
     //     .start()
     //     .onTrue(Commands.runOnce(() -> s_DriveTrain.resetModulesCommand(), s_DriveTrain));
+
+    m_driverController.a().onTrue(
+      Commands.runOnce(() -> s_Intake.setServoPosition(-0.5), s_Intake)
+    );
+
+    m_driverController.y().onTrue(
+      Commands.runOnce(() -> s_Intake.setServoPosition(0.5), s_Intake)
+    );
 
     ArrayList<Pose2d> zero = new ArrayList<Pose2d>();
     zero.add(new Pose2d(0, 0, 0));
