@@ -2,6 +2,8 @@ package frc.robot.components;
 
 import com.kauailabs.navx.frc.AHRS;
 
+import frc.robot.Constants;
+
 /**
  * Simple wrapper around the AHRS gryo class that makes it easier to use and pass around
  * 
@@ -37,7 +39,7 @@ public class GyroModule {
      * @return the angle in radians (0 to 2pi)
      */
     public double getAngleRadians() {
-        return Math.toRadians(gyro.getAngle());
+        return Constants.TWO_PI - Math.toRadians(gyro.getAngle());
     }
 
     /**

@@ -10,6 +10,7 @@ import com.mineinjava.quail.util.MiniPID;
 import com.mineinjava.quail.util.geometry.Pose2d;
 import com.mineinjava.quail.util.geometry.Vec2d;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.QuailDriveTrain;
 
@@ -25,12 +26,12 @@ public class RunPath extends Command {
 
         // TODO: Put units on these
         ConstraintsPair translationPair = new ConstraintsPair(30, 60);
-        ConstraintsPair rotationPair = new ConstraintsPair(0.5, 1);
+        ConstraintsPair rotationPair = new ConstraintsPair(0.1, 1);
 
         // TODO: Move to constants + tune
-        this.pidController = new MiniPID(6.5, 0.0, 0.2);
-        this.pidController.setF(0);
-        
+        this.pidController = new MiniPID(0.5, 0.0, 0.4);
+        this.pidController.setDeadband(Math.PI/24);    
+         
 
         this.pathfollower = new PathFollower(this.drivetrain.getOdometry(), this.path, translationPair, rotationPair,
                 this.pidController, 1, 5, 1, 15);
@@ -53,8 +54,9 @@ public class RunPath extends Command {
         Vec2d newTranslation = (new Vec2d(nextMovement.translation.x / 200,
                 nextMovement.translation.y / 200));
         double rotation = nextMovement.rotation;
-        drivetrain.move(new RobotMovement(rotation / 20, newTranslation),
-                this.drivetrain.odometry.theta);
+        SmartDashboard.putNumber("rotation from PID", rotation);
+        drivetrain.move(new RobotMovement(-rotation / 20, newTranslation),
+                -this.drivetrain.odometry.theta);
     }
 
     @Override
@@ -65,7 +67,7 @@ public class RunPath extends Command {
     @Override
     public void end(boolean interrupted) {
         System.out.println("Run path completed - was interrupted: " + interrupted);
-        drivetrain.stop();
+        //drivetrain.stop();
         super.end(interrupted);
     }
 }

@@ -6,9 +6,17 @@ package frc.robot;
 
 import frc.robot.commands.AutoRoutines;
 import frc.robot.commands.ManualDrive;
+import frc.robot.commands.RunPath;
 import frc.robot.components.GyroModule;
 import frc.robot.subsystems.QuailDriveTrain;
 import frc.robot.subsystems.ServoController;
+
+import java.util.ArrayList;
+import java.util.Collection;
+
+import com.mineinjava.quail.util.geometry.Pose2d;
+import com.mineinjava.quail.util.geometry.Vec2d;
+
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -66,6 +74,7 @@ public class RobotContainer {
     m_chooser.setDefaultOption("Default Auto", m_autoRoutines.defaultAuto());
     m_chooser.addOption("Drive Forward 10 Feet", m_autoRoutines.driveForward10Feet());
     m_chooser.addOption("Drive to Pose", m_autoRoutines.driveToPose());
+    m_chooser.addOption("Drive forward 100 feet", m_autoRoutines.driveForward100Feet());
 
     Shuffleboard.getTab("Autonomous").add("Select Autonomous Profile", m_chooser);
   }
@@ -105,6 +114,9 @@ public class RobotContainer {
 
     m_driverController.start().onTrue(s_DriveTrain.resetModulesCommand());
     s_DriveTrain.setDefaultCommand(new ManualDrive(m_driverController, m_gyro, s_DriveTrain));
+    ArrayList<Pose2d> zero = new ArrayList<Pose2d>();
+    zero.add(new Pose2d(0,0,0));
+    m_driverController.x().whileTrue(new RunPath(s_DriveTrain,zero));
   }
 
   /**

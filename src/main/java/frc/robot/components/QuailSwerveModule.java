@@ -9,7 +9,6 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.wpilibj.AnalogEncoder;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 
 /**
@@ -70,7 +69,6 @@ public class QuailSwerveModule extends SwerveModuleBase
 		this.currentAngle = (getAbsoluteEncoderAngle() * Constants.TWO_PI);
 		this.setAngle(this.currentAngle);
 
-
 		SparkPIDController pidController = this.steeringMotor.getPIDController();
 		kP = 0.2;
 		kI = 0.00;
@@ -105,7 +103,7 @@ public class QuailSwerveModule extends SwerveModuleBase
 
 	// returns rotations, 0 is x axis
 	public double getAbsoluteEncoderAngle() {
-		double currentPos = this.getFilteredAbsoluteEncoder() - this.analogEncoderOffset;
+		double currentPos = this.getRawAbsoluteEncoderAngle() - this.analogEncoderOffset;
 		currentPos = (currentPos + 1) % 1;
 		return currentPos;
 	}
