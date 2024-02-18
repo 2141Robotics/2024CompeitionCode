@@ -38,7 +38,7 @@ public class RunPath extends Command {
 
     // TODO: Put units on these
     ConstraintsPair translationPair = new ConstraintsPair(10, 10);
-    ConstraintsPair rotationPair = new ConstraintsPair(0.1, .1);
+    ConstraintsPair rotationPair = new ConstraintsPair(0.1, .5);
     
     this.pathfollower =
         new PathFollower(
@@ -49,7 +49,7 @@ public class RunPath extends Command {
             this.pidController,
             3,
             4,
-            0.1,
+            1,
             15);
 
     this.path.currentPointIndex = 0;
