@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import com.mineinjava.quail.util.geometry.Pose2d;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -13,7 +14,9 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.AutoRoutines;
 import frc.robot.commands.ManualDrive;
+import frc.robot.commands.RunPath;
 import frc.robot.subsystems.QuailDriveTrain;
+import java.util.ArrayList;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -84,6 +87,10 @@ public class RobotContainer {
     m_driverController
         .start()
         .onTrue(Commands.runOnce(() -> s_DriveTrain.resetModulesCommand(), s_DriveTrain));
+
+    ArrayList<Pose2d> zero = new ArrayList<Pose2d>();
+    zero.add(new Pose2d(0, 0, 0));
+    m_driverController.x().whileTrue(new RunPath(s_DriveTrain, zero));
   }
 
   /**

@@ -5,14 +5,18 @@
 package frc.robot.subsystems;
 
 import com.mineinjava.quail.RobotMovement;
+import com.mineinjava.quail.localization.KalmanFilterLocalizer;
 import com.mineinjava.quail.localization.SwerveOdometry;
 import com.mineinjava.quail.pathing.PathFollower;
 import com.mineinjava.quail.util.MiniPID;
+import com.mineinjava.quail.util.geometry.Pose2d;
 import com.mineinjava.quail.util.geometry.Vec2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -31,6 +35,9 @@ public class QuailDriveTrain extends SubsystemBase {
   public SwerveOdometry odometry;
   public PathFollower pathFollower;
   public MiniPID pidcontroller;
+
+  private KalmanFilterLocalizer kalmanFilter =
+      new KalmanFilterLocalizer(new Vec2d(0, 0), Constants.LOOPTIME);
 
   private final GyroModule gyro = new GyroModule();
 
@@ -179,6 +186,37 @@ public class QuailDriveTrain extends SubsystemBase {
     this.odometry.updateDeltaPoseEstimate(
         velocity.translation.scale(Constants.LOOPTIME).rotate(this.gyro.getAngleDegrees(), true));
     this.odometry.setAngle(-this.gyro.getAngleRadians());
+
+    double[] pos =
+        NetworkTableInstance.getDefault()
+            .getTable("limelight")
+            .getEntry("botpose")
+            .getDoubleArray(new double[6]);
+    SmartDashboard.putNumberArray("Limelight Pos", pos);
+    double LX = pos[1] * Constants.INCHES_PER_METER;
+    double LY = -pos[0] * Constants.INCHES_PER_METER;
+    double LATENCY = pos[6]; // convert from ms to s
+    SmartDashboard.putNumber("LX", LX);
+    SmartDashboard.putNumber("LY", LY);
+
+    double w = 0.15;
+    if ((LX == 0) && (LY == 0)) {
+      w = 0;
+    }
+
+    this.kalmanFilter.update(
+        new Vec2d(LX, LY),
+        velocity.translation.rotate(-this.gyro.getAngleDegrees(), true),
+        LATENCY,
+        w);
+    SmartDashboard.putNumber("KFx", this.kalmanFilter.getPose().x);
+    SmartDashboard.putNumber("KFy", this.kalmanFilter.getPose().y);
+
+    SmartDashboard.putNumber("Ox", this.odometry.x);
+    SmartDashboard.putNumber("Oy", this.odometry.y);
+
+    this.odometry.setPose(
+        new Pose2d(this.kalmanFilter.getPose().vec(), this.gyro.getAngleRadians()));
 
     field.setRobotPose(
         this.odometry.y / Constants.INCHES_PER_METER,
