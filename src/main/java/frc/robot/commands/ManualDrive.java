@@ -24,13 +24,12 @@ public class ManualDrive extends Command {
     addRequirements(driveTrain);
   }
 
-  @Override
-  public void initialize() {
-    super.initialize();
-    driveTrain.stop();
-    driveTrain.resetModules();
-    System.out.println("Starting drive command...");
-  }
+    @Override
+    public void initialize() {
+      super.initialize();
+      // driveTrain.stop();
+      driveTrain.resetModules();
+    }
 
   @Override
   public void execute() {
@@ -64,6 +63,10 @@ public class ManualDrive extends Command {
       driveTrain.stop();
     } else {
       RobotMovement movement = new RobotMovement(rightStickVector.x / 35, newDriveVector);
+
+      // TODO(bernie): remove me - used for testing
+      // movement = new RobotMovement(0, new Vec2d(0, 0.05));
+
       driveTrain.move(movement, -(driveTrain.getGyro().getAngleRadians()));
     }
   }

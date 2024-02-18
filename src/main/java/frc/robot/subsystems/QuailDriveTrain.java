@@ -14,6 +14,7 @@ import com.mineinjava.quail.util.geometry.Vec2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -150,9 +151,14 @@ public class QuailDriveTrain extends SubsystemBase {
    * @return the command to move the drive train
    */
   public void move(RobotMovement movement, double gyroOffset) {
-    // System.out.println("Moving drive train..." + movement.toString() + " " +
-    // gyroOffset);
-    driveTrain.move(movement, gyroOffset);
+    Vec2d[] moduleVectors =
+        driveTrain.calculateMoveAngles(movement.translation, movement.rotation, gyroOffset);
+    moduleVectors = driveTrain.normalizeModuleVectors(moduleVectors);
+    for (int i = 0; i < driveTrain.swerveModules.size(); i++) {
+      driveTrain.swerveModules.get(i).set(moduleVectors[i]);
+    }
+
+    // driveTrain.move(movement, gyroOffset);
   }
 
   /////////////////////////////////////////////////////////////////////////////
@@ -190,7 +196,8 @@ public class QuailDriveTrain extends SubsystemBase {
         new Vec2d(LX, LY),
         velocity.translation.rotate(-this.gyro.getAngleDegrees(), true),
         LATENCY,
-        w);
+        w,
+        Timer.getFPGATimestamp());
     SmartDashboard.putNumber("KFx", this.kalmanFilter.getPose().x);
     SmartDashboard.putNumber("KFy", this.kalmanFilter.getPose().y);
 
@@ -212,5 +219,9 @@ public class QuailDriveTrain extends SubsystemBase {
     for (QuailSwerveModule module : modules) {
       module.initSendable(builder);
     }
+
+    builder.addDoubleProperty("KLx", () -> this.kalmanFilter.getPose().x, null);
+        builder.addDoubleProperty("KLy", () -> this.kalmanFilter.getPose().y, null);
+        builder.addDoubleProperty("KLh", () -> this.kalmanFilter.getPose().heading, null);
   }
 }

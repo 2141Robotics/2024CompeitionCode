@@ -8,6 +8,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.AnalogEncoder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 
 /**
@@ -30,6 +31,10 @@ public class QuailSwerveModule extends SwerveModuleBase {
   public final double analogEncoderID;
 
   public double analogEncoderOffset;
+  private SparkPIDController pidController;
+
+  private double targetAngle = 0;
+  private double targetAngleAdjusted = 0;
 
   public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput;
 
@@ -57,8 +62,37 @@ public class QuailSwerveModule extends SwerveModuleBase {
     this.drivingMotor = new CANSparkMax(driveMotorID, MotorType.kBrushless);
     this.steeringMotor = new CANSparkMax(steeringMotorID, MotorType.kBrushless);
     this.analogEncoder = new AnalogEncoder(analogEncoderID);
+    pidController = this.steeringMotor.getPIDController();
+
+	// Setup PID
+	kP = 0.05;
+    kI = 0.00;
+    kD = 0.25;
+    kIz = 0;
+    kFF = 0.000;
+    kMaxOutput = 1;
+    kMinOutput = -1;
+
+    pidController.setP(kP);
+    // pidController.setI(kI);
+    pidController.setD(kD);
+    // pidController.setIZone(kIz);
+    // pidController.setFF(kFF);
+    pidController.setOutputRange(kMinOutput, kMaxOutput);
+
+    this.steeringMotor.setInverted(false);
+    this.steeringMotor.setIdleMode(IdleMode.kBrake);
+    // this.steeringMotor.setSmartCurrentLimit(1);
+	this.steeringMotor.burnFlash();
+
+    this.drivingMotor.setIdleMode(IdleMode.kBrake);
+    this.drivingMotor.setInverted(true);
+	// this.drivingMotor.setSmartCurrentLimit(1);
+    this.drivingMotor.burnFlash();
 
     System.out.println("Finished initializing" + this.toString());
+    this.reset();
+    System.out.println("Reset module...");
   }
 
   /** Sets the module's angle to the desired angle. TODO: Bernie thinks this is a no-op */
@@ -68,36 +102,7 @@ public class QuailSwerveModule extends SwerveModuleBase {
         .getEncoder()
         .setPosition(getAbsoluteEncoderAngle() * Constants.steeringRatio);
     this.currentAngle = (getAbsoluteEncoderAngle() * Constants.TWO_PI);
-
-    // TODO(Marcus): Should reset set the motor? I feel like reset shouldn't cause
-    // any motion
     this.setAngle(this.currentAngle);
-
-    // TODO(Marcus): I think it's worth finding out why we "need" this in reset
-    // I know we talked about the pid configuration changing during runtime, I feel
-    // like we should dig into that
-    // and solve that problem instead of band-aiding it here
-    SparkPIDController pidController = this.steeringMotor.getPIDController();
-    kP = 0.2;
-    kI = 0.00;
-    kD = 0.00;
-    kIz = 0;
-    kFF = 0.000;
-    kMaxOutput = 1;
-    kMinOutput = -1;
-
-    pidController.setP(kP);
-    pidController.setI(kI);
-    pidController.setD(kD);
-    pidController.setIZone(kIz);
-    pidController.setFF(kFF);
-    pidController.setOutputRange(kMinOutput, kMaxOutput);
-    this.steeringMotor.setInverted(false);
-    this.steeringMotor.setIdleMode(IdleMode.kBrake);
-    this.drivingMotor.setIdleMode(IdleMode.kBrake);
-    this.drivingMotor.setInverted(true);
-    this.drivingMotor.burnFlash();
-    this.steeringMotor.burnFlash();
   }
 
   // returns rotations, 0 is x axis
@@ -133,9 +138,9 @@ public class QuailSwerveModule extends SwerveModuleBase {
   // @marcus: can you write a docstring here? I'm not sure what this does
   @Override
   public void setRawAngle(double angle) {
-    this.steeringMotor
-        .getPIDController()
-        .setReference((angle / (2 * Math.PI)) * 12.8, CANSparkMax.ControlType.kPosition);
+	this.targetAngle = angle;
+	this.targetAngleAdjusted = (angle / ( 2 * Math.PI)) * Constants.GEAR_RATIO_SWERVE;
+	this.pidController.setReference(this.targetAngleAdjusted, CANSparkMax.ControlType.kPosition);
   }
 
   @Override
@@ -182,12 +187,18 @@ public class QuailSwerveModule extends SwerveModuleBase {
   public void initSendable(SendableBuilder builder) {
     String name = "SwerveModule[" + this.steeringMotor.getDeviceId() + "]";
 
-    builder.addDoubleProperty(name + " Absolute Encoder", () -> getAbsoluteEncoderAngle(), null);
-    builder.addDoubleProperty(
-        name + " Raw Absolute Encoder", () -> getRawAbsoluteEncoderAngle(), null);
-    builder.addDoubleProperty(
-        name + " Motor Encoder",
-        () -> steeringMotor.getEncoder().getPosition() / Constants.GEAR_RATIO_SWERVE,
-        null);
-  }
+    // builder.addDoubleProperty(name + " Absolute Encoder", () -> getAbsoluteEncoderAngle(), null);
+    // builder.addDoubleProperty(
+    //     name + " Raw Absolute Encoder", () -> getRawAbsoluteEncoderAngle(), null);
+    // builder.addDoubleProperty(
+    //     name + " Motor Encoder",
+    //     () -> steeringMotor.getEncoder().getPosition() / Constants.GEAR_RATIO_SWERVE,
+    //     null);
+
+    builder.addDoubleProperty(name + " amps", () -> steeringMotor.getOutputCurrent(), null);
+  
+	builder.addDoubleProperty(name + " targetAngle", () -> this.targetAngle, null);
+		builder.addDoubleProperty(name + " targetAngleAdj", () -> this.targetAngleAdjusted, null);
+
+}
 }
