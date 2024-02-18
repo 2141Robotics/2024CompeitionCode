@@ -47,39 +47,6 @@ public class Robot extends TimedRobot {
     // robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
-
-    // ArrayList<Vec2d> moduleSpeeds = drivetrain.getModuleSpeeds();
-    // RobotMovement robotMovement = odometry.calculateFastOdometry(moduleSpeeds);
-
-    // Vec2d deltaTranslation = robotMovement.translation.scale(0.02).rotate(this.gyro.getAngle(),
-    // true);
-
-    // this.odometry.updateDeltaPoseEstimate(deltaTranslation);
-
-    // odometry.setAngle(-gyro.getAngle() * Constants.DEG_TO_RAD);
-
-    // this.odometry.setAngle(this.gyro.getAngle());
-
-    // SmartDashboard.putNumber("x", this.odometry.x);
-    // SmartDashboard.putNumber("y", this.odometry.y);
-
-    // if (controller.getBButtonPressed()){
-    // 	odometry.setPose(new Pose2d(0,0,0));
-    // }
-    // if (controller.getYButtonPressed()){
-    //   this.gyro.reset();
-    // }
-
-    // double[] pos =
-    // NetworkTableInstance.getDefault().getTable("limelight").getEntry("botpose").getDoubleArray(new double[6]);
-    // SmartDashboard.putNumberArray("Limelight Pos", pos);
-    // SmartDashboard.putNumber("LX", -pos[1] * Constants.METERS_TO_INCHES);
-    // SmartDashboard.putNumber("LY", pos[0] * Constants.METERS_TO_INCHES);
-
-    // if(pos[0] != 0 && pos[1] != 0){
-    // 	odometry.setPose(new Pose2d(-pos[1]* Constants.METERS_TO_INCHES, pos[0]*
-    // Constants.METERS_TO_INCHES, -this.gyro.getAngle() * Constants.DEG_TO_RAD));
-    // }
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
@@ -114,34 +81,11 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-
-    // driveCommand dt = new driveCommand(primaryController, gyro, drivetrain);
-    // CommandScheduler.getInstance().schedule(dt);
   }
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {
-    // double velo = controller.getLeftTriggerAxis();
-
-    // Vec2d dv = new Vec2d(this.controller.getLeftX(), -this.controller.getLeftY());
-
-    // VelocityVoltage command = new VelocityVoltage(100 * velo);
-    // talon1.setControl(command); // motors are configured to run in opposite
-    // directions. Make both negative to invert
-    // talon2.setControl(command);
-
-    /*
-     * if (controller.getAButton()) {
-     * talon1.set(-velo);
-     * talon2.set(-v elo);
-     * }
-     * else {
-     * talon1.set(velo);
-     * talon2.set(velo);
-     * }
-     */
-  }
+  public void teleopPeriodic() {}
 
   @Override
   public void testInit() {

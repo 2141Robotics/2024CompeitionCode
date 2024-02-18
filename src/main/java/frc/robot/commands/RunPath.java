@@ -7,7 +7,6 @@ import com.mineinjava.quail.pathing.PathFollower;
 import com.mineinjava.quail.util.MiniPID;
 import com.mineinjava.quail.util.geometry.Pose2d;
 import com.mineinjava.quail.util.geometry.Vec2d;
-
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.QuailDriveTrain;
@@ -39,7 +38,7 @@ public class RunPath extends Command {
     // TODO: Put units on these
     ConstraintsPair translationPair = new ConstraintsPair(10, 10);
     ConstraintsPair rotationPair = new ConstraintsPair(0.1, .5);
-    
+
     this.pathfollower =
         new PathFollower(
             this.drivetrain.getOdometry(),
@@ -64,8 +63,7 @@ public class RunPath extends Command {
         (new Vec2d(nextMovement.translation.x / 200, nextMovement.translation.y / 200));
     double rotation = nextMovement.rotation / 100; // TODO: De magic this number!!
     SmartDashboard.putNumber("RunPath target rotation", rotation);
-    drivetrain.move(
-        new RobotMovement(rotation, newTranslation), this.drivetrain.odometry.theta);
+    drivetrain.move(new RobotMovement(rotation, newTranslation), this.drivetrain.odometry.theta);
   }
 
   @Override

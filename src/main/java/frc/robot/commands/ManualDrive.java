@@ -24,12 +24,12 @@ public class ManualDrive extends Command {
     addRequirements(driveTrain);
   }
 
-    @Override
-    public void initialize() {
-      super.initialize();
-      // driveTrain.stop();
-      driveTrain.resetModules();
-    }
+  @Override
+  public void initialize() {
+    super.initialize();
+    // driveTrain.stop();
+    driveTrain.resetModules();
+  }
 
   @Override
   public void execute() {

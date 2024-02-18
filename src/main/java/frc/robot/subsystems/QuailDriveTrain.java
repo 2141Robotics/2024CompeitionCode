@@ -151,14 +151,7 @@ public class QuailDriveTrain extends SubsystemBase {
    * @return the command to move the drive train
    */
   public void move(RobotMovement movement, double gyroOffset) {
-    Vec2d[] moduleVectors =
-        driveTrain.calculateMoveAngles(movement.translation, movement.rotation, gyroOffset);
-    moduleVectors = driveTrain.normalizeModuleVectors(moduleVectors);
-    for (int i = 0; i < driveTrain.swerveModules.size(); i++) {
-      driveTrain.swerveModules.get(i).set(moduleVectors[i]);
-    }
-
-    // driveTrain.move(movement, gyroOffset);
+    driveTrain.move(movement, gyroOffset);
   }
 
   /////////////////////////////////////////////////////////////////////////////
@@ -219,9 +212,5 @@ public class QuailDriveTrain extends SubsystemBase {
     for (QuailSwerveModule module : modules) {
       module.initSendable(builder);
     }
-
-    builder.addDoubleProperty("KLx", () -> this.kalmanFilter.getPose().x, null);
-        builder.addDoubleProperty("KLy", () -> this.kalmanFilter.getPose().y, null);
-        builder.addDoubleProperty("KLh", () -> this.kalmanFilter.getPose().heading, null);
   }
 }

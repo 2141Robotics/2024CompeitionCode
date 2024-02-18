@@ -83,11 +83,6 @@ public class RobotContainer {
         .back()
         .onTrue(Commands.runOnce(() -> s_DriveTrain.resetGyro(), s_DriveTrain));
 
-    // Bind the reset modules command to the start button
-    // m_driverController
-    //     .start()
-    //     .onTrue(Commands.runOnce(() -> s_DriveTrain.resetModulesCommand(), s_DriveTrain));
-
     ArrayList<Pose2d> zero = new ArrayList<Pose2d>();
     zero.add(new Pose2d(0, 0, 0));
     m_driverController.x().whileTrue(new RunPath(s_DriveTrain, zero));

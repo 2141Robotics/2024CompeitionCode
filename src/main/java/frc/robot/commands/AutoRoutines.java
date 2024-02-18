@@ -24,7 +24,7 @@ public final class AutoRoutines {
     targetPoseHeading = Shuffleboard.getTab("Autonomous").add("Heading", 0).getEntry();
   }
 
-  public Command noop () {
+  public Command noop() {
     return Commands.parallel();
   }
 
@@ -37,8 +37,7 @@ public final class AutoRoutines {
     points.add(new Pose2d(0, 0, 0));
 
     return Commands.sequence(
-      this.driveTrain.resetModulesCommand(),
-    new RunPath(this.driveTrain, points));
+        this.driveTrain.resetModulesCommand(), new RunPath(this.driveTrain, points));
   }
 
   public Command driveForward10Feet() {
@@ -47,8 +46,7 @@ public final class AutoRoutines {
     points.add(new Pose2d(0, 10, 0));
 
     return Commands.parallel(
-    this.driveTrain.resetModulesCommand(),  
-    new RunPath(this.driveTrain, points));
+        this.driveTrain.resetModulesCommand(), new RunPath(this.driveTrain, points));
   }
 
   /**
