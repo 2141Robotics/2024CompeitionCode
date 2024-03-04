@@ -167,7 +167,7 @@ public class QuailDriveTrain extends SubsystemBase {
     this.odometry.updateDeltaPoseEstimate(
         velocity.translation.scale(Constants.LOOPTIME).rotate(this.gyro.getAngleDegrees(), true));
     this.odometry.setAngle(-this.gyro.getAngleRadians());
-
+    
     double[] pos =
         NetworkTableInstance.getDefault()
             .getTable("limelight")
@@ -176,13 +176,15 @@ public class QuailDriveTrain extends SubsystemBase {
     SmartDashboard.putNumberArray("Limelight Pos", pos);
     double LX = pos[1] * Constants.INCHES_PER_METER;
     double LY = -pos[0] * Constants.INCHES_PER_METER;
-    double LATENCY = pos[6]; // convert from ms to s
+
     SmartDashboard.putNumber("LX", LX);
     SmartDashboard.putNumber("LY", LY);
-
+    double LATENCY = 0;
     double w = 0.15;
     if ((LX == 0) && (LY == 0)) {
       w = 0;
+      LATENCY = pos[6]; 
+
     }
 
     this.kalmanFilter.update(
