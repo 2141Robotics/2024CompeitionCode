@@ -67,7 +67,7 @@ public class ManualDrive extends Command {
       // TODO(bernie): remove me - used for testing
       // movement = new RobotMovement(0, new Vec2d(0, 0.05));
 
-      driveTrain.move(movement, -(driveTrain.getGyro().getAngleRadians()));
+      driveTrain.move(movement, (driveTrain.getGyro().getAngleRadians()));
     }
   }
 

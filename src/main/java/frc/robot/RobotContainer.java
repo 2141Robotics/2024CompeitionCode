@@ -13,9 +13,12 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.AutoRoutines;
+import frc.robot.commands.ManualClimb;
 import frc.robot.commands.ManualDrive;
 import frc.robot.commands.RunPath;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.QuailDriveTrain;
+import frc.robot.subsystems.Shooter;
 import java.util.ArrayList;
 
 /**
@@ -27,10 +30,15 @@ import java.util.ArrayList;
 public class RobotContainer {
   // Initialize all subsystems
   private final QuailDriveTrain s_DriveTrain = new QuailDriveTrain();
+  private final Shooter s_Shooter = new Shooter();
+  private final Climber s_Climber = new Climber();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
       new CommandXboxController(Constants.kDriverControllerPort);
+
+  private final CommandXboxController m_SecondaryController =
+      new CommandXboxController(Constants.kSecondaryControllerPort);
 
   // Chooser for autonomous routines
   SendableChooser<Command> m_chooser = new SendableChooser<>();
@@ -78,6 +86,8 @@ public class RobotContainer {
     // Make the default command for the drive train the drive command
     s_DriveTrain.setDefaultCommand(new ManualDrive(m_driverController, s_DriveTrain));
 
+    s_Climber.setDefaultCommand(new ManualClimb(s_Climber, m_SecondaryController));
+
     // Bind the reset gyro command to the back button`
     m_driverController
         .back()
@@ -86,6 +96,11 @@ public class RobotContainer {
     ArrayList<Pose2d> zero = new ArrayList<Pose2d>();
     zero.add(new Pose2d(0, 0, 0));
     m_driverController.x().whileTrue(new RunPath(s_DriveTrain, zero));
+
+    m_driverController.a().onTrue(s_Shooter.fullsendCommand());
+    m_driverController.a().onFalse(s_Shooter.stopMotorsCommand());
+
+    m_SecondaryController.back().onTrue(s_Climber.zeroMotorsCommand());
   }
 
   /**

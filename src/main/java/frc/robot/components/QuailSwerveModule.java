@@ -100,6 +100,8 @@ public class QuailSwerveModule extends SwerveModuleBase {
         .getEncoder()
         .setPosition(getAbsoluteEncoderAngle() * Constants.steeringRatio);
     this.currentAngle = (getAbsoluteEncoderAngle() * Constants.TWO_PI);
+    this.drivingMotor.stopMotor();
+    this.steeringMotor.stopMotor();
   }
 
   // returns rotations, 0 is x axis
