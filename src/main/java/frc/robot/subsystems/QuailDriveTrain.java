@@ -176,9 +176,10 @@ public class QuailDriveTrain extends SubsystemBase {
     SmartDashboard.putNumberArray("Limelight Pos", pos);
     double LX = 0;
     double LY = 0;
+
     if (pos.length > 0) {
-      double LX = pos[1] * Constants.INCHES_PER_METER;
-      double LY = -pos[0] * Constants.INCHES_PER_METER;
+      LX = pos[1] * Constants.INCHES_PER_METER;
+      LY = -pos[0] * Constants.INCHES_PER_METER;
     }
 
     SmartDashboard.putNumber("LX", LX);
