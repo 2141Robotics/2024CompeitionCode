@@ -97,7 +97,8 @@ public class RobotContainer {
     zero.add(new Pose2d(0, 0, 0));
     m_driverController.x().whileTrue(new RunPath(s_DriveTrain, zero));
 
-    m_driverController.a().onTrue(s_Shooter.fullsendCommand());
+    s_Shooter.init();
+    m_driverController.a().whileTrue(s_Shooter.fullsendCommand());
     m_driverController.a().onFalse(s_Shooter.stopMotorsCommand());
 
     m_SecondaryController.back().onTrue(s_Climber.zeroMotorsCommand());

@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -19,13 +20,26 @@ public class Shooter extends SubsystemBase {
     t1.setNeutralMode(NeutralModeValue.Coast);
     t2.setNeutralMode(NeutralModeValue.Coast);
 
-    t2.setInverted(false);
-    t1.setInverted(true);
+    t2.setInverted(true);
+    t1.setInverted(false);
+  }
+
+  public void init() {
+    TalonFXConfiguration bothConfiguration = new TalonFXConfiguration();
+    t1.getConfigurator().apply(bothConfiguration);
+    t2.getConfigurator().apply(bothConfiguration);
+
+    t1.setNeutralMode(NeutralModeValue.Coast);
+    t2.setNeutralMode(NeutralModeValue.Coast);
+
+    t2.setInverted(true);
+    t1.setInverted(false);
   }
 
   public void fullsend() {
-    t1.set(0.05);
-    t2.set(0.05);
+
+    t1.setControl(new VoltageOut(7));
+    t2.setControl(new VoltageOut(7));
   }
 
   public void stopMotors() {

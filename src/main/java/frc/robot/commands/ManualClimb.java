@@ -10,8 +10,10 @@ public class ManualClimb extends Command {
   private CommandXboxController secondaryController;
 
   public ManualClimb(Climber climber, CommandXboxController secondaryController) {
+    super();
     this.climber = climber;
     this.secondaryController = secondaryController;
+    addRequirements(climber);
   }
 
   public void initialize() {

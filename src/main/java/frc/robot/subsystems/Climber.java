@@ -11,8 +11,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Climber extends SubsystemBase {
-  private TalonFX t1 = new TalonFX(21);
-  private CANSparkMax t2 = new CANSparkMax(22, MotorType.kBrushless);
+  private TalonFX t1 = new TalonFX(31);
+  private CANSparkMax t2 = new CANSparkMax(32, MotorType.kBrushless);
 
   public Climber() {
     TalonFXConfiguration talonConfig = new TalonFXConfiguration();

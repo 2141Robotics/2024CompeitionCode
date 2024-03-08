@@ -46,9 +46,10 @@ public class ManualDrive extends Command {
 
     double speedScale = 0.08 + (0.92 * rightTrigger);
 
-    if (Math.abs(leftStickVector.x) < 0.1) {
-      rightX = Double.MIN_NORMAL;
-    }
+    // UNKOWN USE
+    // if (Math.abs(leftStickVector.x) < 0.1) {
+    //  rightX = Double.MIN_NORMAL;
+    // }
 
     if (leftStickVector.getLength() < Constants.deadZonePercent) {
       leftStickVector = new Vec2d(0, 0);
