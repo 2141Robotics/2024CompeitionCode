@@ -14,9 +14,7 @@ import com.mineinjava.quail.util.geometry.Vec2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -176,14 +174,14 @@ public class QuailDriveTrain extends SubsystemBase {
             .getEntry("botpose")
             .getDoubleArray(new double[6]);
     SmartDashboard.putNumberArray("Limelight Pos", pos);
-    double LX =0;
-    double LY =0;
+    double LX = 0;
+    double LY = 0;
     double LATENCY = 0;
 
-    if(pos.length > 0){
-     LX = pos[1] * Constants.INCHES_PER_METER;
-     LY = -pos[0] * Constants.INCHES_PER_METER;
-     LATENCY = pos[6];
+    if (pos.length > 0) {
+      LX = pos[1] * Constants.INCHES_PER_METER;
+      LY = -pos[0] * Constants.INCHES_PER_METER;
+      LATENCY = pos[6];
     }
 
     SmartDashboard.putNumber("LX", LX);
