@@ -13,12 +13,13 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.AutoRoutines;
+import frc.robot.commands.Intake;
 import frc.robot.commands.ManualClimb;
 import frc.robot.commands.ManualDrive;
 import frc.robot.commands.RunPath;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.QuailDriveTrain;
-import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.IntakeShooter;
 import java.util.ArrayList;
 
 /**
@@ -30,7 +31,7 @@ import java.util.ArrayList;
 public class RobotContainer {
   // Initialize all subsystems
   private final QuailDriveTrain s_DriveTrain = new QuailDriveTrain();
-  private final Shooter s_Shooter = new Shooter();
+  private final IntakeShooter s_IntakeShooter = new IntakeShooter();
   private final Climber s_Climber = new Climber();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
@@ -93,14 +94,13 @@ public class RobotContainer {
         .back()
         .onTrue(Commands.runOnce(() -> s_DriveTrain.resetGyro(), s_DriveTrain));
 
+    
     ArrayList<Pose2d> zero = new ArrayList<Pose2d>();
     zero.add(new Pose2d(0, 0, 0));
     m_driverController.x().whileTrue(new RunPath(s_DriveTrain, zero));
 
-    s_Shooter.init();
-    m_driverController.a().whileTrue(s_Shooter.fullsendCommand());
-    m_driverController.a().onFalse(s_Shooter.stopMotorsCommand());
-
+    m_SecondaryController.rightBumper().toggleOnTrue(new Intake(s_IntakeShooter));
+    m_SecondaryController.leftBumper().onTrue(s_IntakeShooter.shoot());
     m_SecondaryController.back().onTrue(s_Climber.zeroMotorsCommand());
   }
 

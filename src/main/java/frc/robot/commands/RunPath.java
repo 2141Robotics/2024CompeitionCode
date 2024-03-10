@@ -17,7 +17,6 @@ public class RunPath extends Command {
   private PathFollower pathfollower;
   private Path path;
   private MiniPID pidController;
-  ;
 
   public RunPath(QuailDriveTrain drivetrain, ArrayList<Pose2d> points) {
     this.path = new Path(points);
@@ -25,7 +24,6 @@ public class RunPath extends Command {
     // TODO: Move to constants + tune
     this.pidController = new MiniPID(0.1, 0.0, 0.0);
     this.pidController.setF(0);
-    ;
 
     addRequirements(drivetrain);
 

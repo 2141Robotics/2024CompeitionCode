@@ -43,4 +43,12 @@ public class Constants {
   // climber constants
   public static final double CLIMBER_SPEED = 0.2d; // speed for climber
   public static final double CLIMBER_DIFF_SPEED = 0.4; // x speed for climber
+
+  // intake/shooter constants
+  public static final double SHOOTER_VOLTAGE = 7;
+  public static final double INTAKE_SPEED = 0.3;
+  public static final double INTAKE_RETRACT_SPEED = -0.1;
+  public static final double SHOOTER_REVERSE_TIME = 0.25;
+  public static final double SHOOTER_WAIT_TIME = 0.25;
+  public static final double SHOOTER_SHOOT_TIME = 1;
 }
