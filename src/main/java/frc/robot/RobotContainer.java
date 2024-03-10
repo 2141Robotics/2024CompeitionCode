@@ -94,9 +94,9 @@ public class RobotContainer {
         .back()
         .onTrue(Commands.runOnce(() -> s_DriveTrain.resetGyro(), s_DriveTrain));
 
-    ArrayList<Pose2d> zero = new ArrayList<Pose2d>();
-    zero.add(new Pose2d(0, 0, 0));
-    m_driverController.x().whileTrue(new RunPath(s_DriveTrain, zero));
+    ArrayList<Pose2d> shootingPosition = new ArrayList<Pose2d>();
+
+    m_driverController.x().whileTrue(new RunPath(s_DriveTrain, shootingPosition));
 
     m_SecondaryController.rightBumper().toggleOnTrue(new Intake(s_IntakeShooter));
     m_SecondaryController.leftBumper().onTrue(s_IntakeShooter.shoot());

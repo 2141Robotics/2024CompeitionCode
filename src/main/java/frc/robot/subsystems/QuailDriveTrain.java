@@ -14,6 +14,8 @@ import com.mineinjava.quail.util.geometry.Vec2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -63,6 +65,15 @@ public class QuailDriveTrain extends SubsystemBase {
 
     // Reset the gyro
     gyro.reset();
+  }
+
+  public Pose2d shooterPosition() {
+    if (DriverStation.getAlliance().equals(Alliance.Blue)) {
+      return new Pose2d();
+    } else if (DriverStation.getAlliance().equals(Alliance.Red)) {
+      return new Pose2d();
+    }
+    return new Pose2d();
   }
 
   public void resetModules() {

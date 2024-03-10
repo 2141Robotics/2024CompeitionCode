@@ -13,8 +13,8 @@ import frc.robot.subsystems.QuailDriveTrain;
 import java.util.ArrayList;
 
 public class RunPath extends Command {
-  private QuailDriveTrain drivetrain;
-  private PathFollower pathfollower;
+  protected QuailDriveTrain drivetrain;
+  protected PathFollower pathfollower;
   private Path path;
   private MiniPID pidController;
 
