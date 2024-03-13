@@ -56,7 +56,7 @@ public class IntakeShooter extends SubsystemBase {
   }
 
   public boolean hasNote() {
-    return intakeLimitSwitch.get();
+    return !intakeLimitSwitch.get();
   }
 
   public void retractIntakeMotors() {
