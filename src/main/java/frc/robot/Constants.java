@@ -20,7 +20,8 @@ public class Constants {
   public static final double RAD_TO_DEG = 180d / Math.PI;
   public static final double DEG_TO_RAD = 1 / RAD_TO_DEG;
   public static final double INCHES_PER_METER = 39.3701;
-  public static final int INCHES_PER_FOOT = 12;
+  public static final double INCHES_PER_FOOT = 12;
+  public static final double SECONDS_TO_MS = 1000;
 
   // precision constants
   public static final double deadZonePercent = 0.05d;
@@ -45,10 +46,11 @@ public class Constants {
   public static final double CLIMBER_DIFF_SPEED = 0.4; // x speed for climber
 
   // intake/shooter constants
-  public static final double SHOOTER_VOLTAGE = 7;
+  public static final double SHOOTER_VOLTAGE = 48;
   public static final double INTAKE_SPEED = 0.3;
   public static final double INTAKE_RETRACT_SPEED = -0.1;
-  public static final double SHOOTER_REVERSE_TIME = 0.25;
-  public static final double SHOOTER_WAIT_TIME = 0.25;
+  public static final double INTAKE_RETRACT_TIME = 0.5;
+  public static final double SHOOTER_SPIN_UP_TIME = 1;
+  public static final double INTAKE_SHOOT_SPEED = 1;
   public static final double SHOOTER_SHOOT_TIME = 1;
 }

@@ -52,10 +52,10 @@ public class QuailDriveTrain extends SubsystemBase {
   public QuailDriveTrain() {
     // Setup all of our swerve modules
     // TODO: Move to constants
-    modules.add(new QuailSwerveModule(new Vec2d(13, 13), 1, 2, 0, 0.443 - 0.25));
-    modules.add(new QuailSwerveModule(new Vec2d(13, -13), 3, 4, 1, 0.425 - 0.25));
-    modules.add(new QuailSwerveModule(new Vec2d(-13, -13), 5, 6, 2, 0.062 - 0.25));
-    modules.add(new QuailSwerveModule(new Vec2d(-13, 13), 7, 8, 3, 0.359 - 0.25));
+    modules.add(new QuailSwerveModule(new Vec2d(13, 13), 1, 2, 0, 0.443 + 0.25));
+    modules.add(new QuailSwerveModule(new Vec2d(13, -13), 3, 4, 1, 0.425 + 0.25));
+    modules.add(new QuailSwerveModule(new Vec2d(-13, -13), 5, 6, 2, 0.062 + 0.25));
+    modules.add(new QuailSwerveModule(new Vec2d(-13, 13), 7, 8, 3, 0.359 + 0.25));
 
     // Initialize an underlying Quail drive train + odo
     driveTrain = new QuailSwerveDrive(gyro, modules);
@@ -68,13 +68,24 @@ public class QuailDriveTrain extends SubsystemBase {
   }
 
   public Pose2d shooterPosition() {
-    if (DriverStation.getAlliance().equals(Alliance.Blue)) {
-      return new Pose2d();
-    } else if (DriverStation.getAlliance().equals(Alliance.Red)) {
-      return new Pose2d();
+    if (DriverStation.getAlliance().get() == Alliance.Red) {
+      return new Pose2d(0,1,0);
+    } else if (DriverStation.getAlliance().get() == Alliance.Blue) {
+      return new Pose2d(0,-1,0);
     }
-    return new Pose2d();
+    return new Pose2d(3,3,0);
   }
+
+  public Pose2d ampPosition() {
+    if (DriverStation.getAlliance().get() == Alliance.Red) {
+      return new Pose2d(0,1,0);
+    } else if (DriverStation.getAlliance().get() == Alliance.Blue) {
+      return new Pose2d(0,-1,0);
+    }
+    return new Pose2d(3,3,0);
+  }
+
+  
 
   public void resetModules() {
     for (QuailSwerveModule module : this.modules) {
@@ -189,7 +200,7 @@ public class QuailDriveTrain extends SubsystemBase {
     double LY = 0;
     double LATENCY = 0;
 
-    if (pos.length > 0) {
+    if (pos.length == 7) {
       LX = pos[1] * Constants.INCHES_PER_METER;
       LY = -pos[0] * Constants.INCHES_PER_METER;
       LATENCY = pos[6];
@@ -208,13 +219,15 @@ public class QuailDriveTrain extends SubsystemBase {
         velocity.translation.rotate(-this.gyro.getAngleDegrees(), true),
         LATENCY,
         w,
-        Timer.getFPGATimestamp());
+        Timer.getFPGATimestamp() * Constants.SECONDS_TO_MS);
 
     SmartDashboard.putNumber("KFx", this.kalmanFilter.getPose().x);
     SmartDashboard.putNumber("KFy", this.kalmanFilter.getPose().y);
 
     SmartDashboard.putNumber("Ox", this.odometry.x);
     SmartDashboard.putNumber("Oy", this.odometry.y);
+
+    SmartDashboard.putString("shooter pose", this.shooterPosition().toString());
 
     this.odometry.setPose(
         new Pose2d(this.kalmanFilter.getPose().vec(), this.gyro.getAngleRadians()));

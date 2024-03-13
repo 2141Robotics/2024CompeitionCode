@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -11,6 +12,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 
 public class IntakeShooter extends SubsystemBase {
@@ -40,14 +42,14 @@ public class IntakeShooter extends SubsystemBase {
     i1.restoreFactoryDefaults();
     i2.restoreFactoryDefaults();
 
-    i1.setIdleMode(IdleMode.kBrake);
-    i2.setIdleMode(IdleMode.kBrake);
+    i1.setIdleMode(IdleMode.kCoast);
+    i2.setIdleMode(IdleMode.kCoast);
 
     i1.setInverted(true);
     i2.setInverted(false);
 
-    i1.setSmartCurrentLimit(12);
-    i2.setSmartCurrentLimit(12);
+    i1.setSmartCurrentLimit(30);
+    i2.setSmartCurrentLimit(30);
 
     i1.burnFlash();
     i2.burnFlash();
@@ -73,8 +75,13 @@ public class IntakeShooter extends SubsystemBase {
   }
 
   public void startShooterMotors() {
-    s1.setControl(new VoltageOut(Constants.SHOOTER_VOLTAGE));
-    s2.setControl(new VoltageOut(Constants.SHOOTER_VOLTAGE));
+    s1.setControl(new VoltageOut(Constants.SHOOTER_VOLTAGE, true, false, false, false));
+    s2.setControl(new DutyCycleOut(Constants.SHOOTER_VOLTAGE, true, false, false, false));
+  }
+
+  public void intakeMotorShoot() {
+    i1.set(Constants.INTAKE_SHOOT_SPEED);
+    i2.set(Constants.INTAKE_SHOOT_SPEED);
   }
 
   public void stopShooterMotors() {
@@ -89,10 +96,17 @@ public class IntakeShooter extends SubsystemBase {
         });
   }
 
+  public Command intakeMotorShootCommand() {
+    return this.runOnce(() -> {
+      this.intakeMotorShoot();
+    });
+  }
+
   public Command stopShooterMotorsCommand() {
     return this.runOnce(
         () -> {
           this.stopShooterMotors();
+          this.stopIntakeMotors();
         });
   }
 
@@ -119,23 +133,18 @@ public class IntakeShooter extends SubsystemBase {
 
   public Command shoot() {
     /*
-    i1.set(0.35);
-    i2.set(0.35);
-    s1.set(1);
-    s2.set(1);
-    */
+     * i1.set(0.35);
+     * i2.set(0.35);
+     * s1.set(1);
+     * s2.set(1);
+     */
     System.out.println("SHOOTING");
-    return this.retractIntakeMotorsCommand() // start retracting note
-        .andThen(Commands.waitSeconds(Constants.SHOOTER_REVERSE_TIME)) // wait
-        .andThen(this.stopIntakeMotorsCommand()) // stop retracting
-        .andThen(this.startShooterMotorsCommand()) // spin up shooter motors
-        .andThen(Commands.waitSeconds(Constants.SHOOTER_WAIT_TIME)) // wait
-        .andThen(this.startIntakeMotorsCommand()) // feed note into shooter
-        .andThen(Commands.waitSeconds(Constants.SHOOTER_SHOOT_TIME)) // wait
-        .finallyDo(
-            (boolean _interrupted) -> { // stop motors on end
-              this.stopIntakeMotors();
-              this.stopShooterMotors();
-            });
+    return Commands.sequence(this.retractIntakeMotorsCommand(), new WaitCommand(Constants.INTAKE_RETRACT_TIME),
+        this.stopIntakeMotorsCommand(), 
+        this.startShooterMotorsCommand(),
+        new WaitCommand(Constants.SHOOTER_SPIN_UP_TIME), 
+        this.intakeMotorShootCommand(),
+        new WaitCommand(Constants.SHOOTER_SHOOT_TIME), 
+        this.stopShooterMotorsCommand());
   }
 }

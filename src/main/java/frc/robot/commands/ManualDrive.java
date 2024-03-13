@@ -63,7 +63,7 @@ public class ManualDrive extends Command {
     if ((Math.abs(rightStickVector.x) < 0.1) && (newDriveVector.getLength() < 0.05)) {
       driveTrain.stop();
     } else {
-      RobotMovement movement = new RobotMovement(rightStickVector.x / 35, newDriveVector);
+      RobotMovement movement = new RobotMovement(-rightStickVector.x / 35, newDriveVector);
 
       // TODO(bernie): remove me - used for testing
       // movement = new RobotMovement(0, new Vec2d(0, 0.05));

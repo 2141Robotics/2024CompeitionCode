@@ -99,6 +99,7 @@ public class RobotContainer {
     m_driverController.x().whileTrue(new RunPath(s_DriveTrain, shootingPosition));
 
     m_SecondaryController.rightBumper().toggleOnTrue(new Intake(s_IntakeShooter));
+    m_SecondaryController.back().onTrue(s_Climber.zeroMotorsCommand());
     m_SecondaryController.leftBumper().onTrue(s_IntakeShooter.shoot());
     m_SecondaryController.back().onTrue(s_Climber.zeroMotorsCommand());
   }
