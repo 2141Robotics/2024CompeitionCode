@@ -69,20 +69,20 @@ public class QuailDriveTrain extends SubsystemBase {
 
   public Pose2d shooterPosition() {
     if (DriverStation.getAlliance().get() == Alliance.Red) {
-      return new Pose2d(0,1,0);
+      return new Pose2d(65,-211,0);
     } else if (DriverStation.getAlliance().get() == Alliance.Blue) {
-      return new Pose2d(0,-1,0);
+      return new Pose2d(65,211,0);
     }
-    return new Pose2d(3,3,0);
+    return new Pose2d(0,0,0);
   }
 
   public Pose2d ampPosition() {
     if (DriverStation.getAlliance().get() == Alliance.Red) {
-      return new Pose2d(0,1,0);
+      return new Pose2d(65,-211,0);
     } else if (DriverStation.getAlliance().get() == Alliance.Blue) {
-      return new Pose2d(0,-1,0);
+      return new Pose2d(65,211,0);
     }
-    return new Pose2d(3,3,0);
+    return new Pose2d(0,0,0);
   }
 
   
@@ -206,10 +206,15 @@ public class QuailDriveTrain extends SubsystemBase {
       LATENCY = pos[6];
     }
 
+    if (DriverStation.getAlliance().get() == Alliance.Blue) {
+      LY = -LY; // invert y
+      LX = -LX;
+    }
+
     SmartDashboard.putNumber("LX", LX);
     SmartDashboard.putNumber("LY", LY);
 
-    double w = 0.15;
+    double w = 0.015;
     if ((LX == 0) && (LY == 0)) {
       w = 0;
     }

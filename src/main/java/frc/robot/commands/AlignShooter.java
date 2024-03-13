@@ -9,7 +9,7 @@ public class AlignShooter extends RunPath {
   public Path path;
 
   public AlignShooter(QuailDriveTrain drivetrain) {
-    super(drivetrain, null);
+    super(drivetrain, new ArrayList<Pose2d>());
   }
 
   @Override
@@ -17,6 +17,7 @@ public class AlignShooter extends RunPath {
     ArrayList<Pose2d> shooterPose = new ArrayList<Pose2d>();
     shooterPose.add(this.drivetrain.shooterPosition());
     this.path = new Path(shooterPose);
+    System.out.println("======== initialize AlignShooter" + this.path.points.toString());
 
     super.initialize();
   }

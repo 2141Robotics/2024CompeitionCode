@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.commands.AlignShooter;
 import frc.robot.commands.AutoRoutines;
 import frc.robot.commands.Intake;
 import frc.robot.commands.ManualClimb;
@@ -45,7 +46,7 @@ public class RobotContainer {
   SendableChooser<Command> m_chooser = new SendableChooser<>();
 
   // All auto routines
-  private final AutoRoutines m_autoRoutines = new AutoRoutines(s_DriveTrain);
+  private final AutoRoutines m_autoRoutines = new AutoRoutines(s_DriveTrain, s_IntakeShooter);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -67,7 +68,7 @@ public class RobotContainer {
     // Shuffleboard.getTab("DriveTrain").add("Gyro", s_DriveTrain.getGyro());
 
     // Put auto routines on the smart dashboard
-    m_chooser.setDefaultOption("Default Auto", m_autoRoutines.defaultAuto());
+    m_chooser.setDefaultOption("shoot preloaded note", this.m_autoRoutines.shootPreloadedNote());
     // m_chooser.addOption("Drive Forward 10 Feet", m_autoRoutines.driveForward10Feet());
     // m_chooser.addOption("Drive to Pose", m_autoRoutines.driveToPose());
 
@@ -94,9 +95,10 @@ public class RobotContainer {
         .back()
         .onTrue(Commands.runOnce(() -> s_DriveTrain.resetGyro(), s_DriveTrain));
 
-    ArrayList<Pose2d> shootingPosition = new ArrayList<Pose2d>();
 
-    m_driverController.x().whileTrue(new RunPath(s_DriveTrain, shootingPosition));
+
+    m_driverController.x().whileTrue(this.m_autoRoutines.lineUpShooter());
+   // m_driverController.x().whileTrue(new AlignShooter(s_DriveTrain));
 
     m_SecondaryController.rightBumper().toggleOnTrue(new Intake(s_IntakeShooter));
     m_SecondaryController.back().onTrue(s_Climber.zeroMotorsCommand());

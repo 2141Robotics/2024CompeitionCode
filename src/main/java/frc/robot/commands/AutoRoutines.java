@@ -5,19 +5,26 @@ import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.subsystems.IntakeShooter;
 import frc.robot.subsystems.QuailDriveTrain;
 import java.util.ArrayList;
 
 public final class AutoRoutines {
 
   private QuailDriveTrain driveTrain;
+  private IntakeShooter intakeShooter;
 
   private GenericEntry targetPoseX;
   private GenericEntry targetPoseY;
   private GenericEntry targetPoseHeading;
+  ArrayList<Pose2d> shootingPos = new ArrayList<Pose2d>();
 
-  public AutoRoutines(QuailDriveTrain driveTrain) {
+
+  public AutoRoutines(QuailDriveTrain driveTrain, IntakeShooter shooter) {
+    this.shootingPos.add(new Pose2d(-55,-230,0));
     this.driveTrain = driveTrain;
+    this.intakeShooter = shooter;
 
     targetPoseX = Shuffleboard.getTab("Autonomous").add("TargetPoseX", 0).getEntry();
     targetPoseY = Shuffleboard.getTab("Autonomous").add("TargetPoseY", 0).getEntry();
@@ -26,6 +33,14 @@ public final class AutoRoutines {
 
   public Command noop() {
     return Commands.parallel();
+  }
+
+  public Command lineUpShooter(){
+    return new RunPath(this.driveTrain, shootingPos);
+  }
+
+  public Command shootPreloadedNote(){
+    return Commands.sequence(this.driveTrain.resetGyroCommand(), this.driveTrain.resetModulesCommand(), lineUpShooter(), this.driveTrain.stopCommand(), new WaitCommand(0.3), this.intakeShooter.shoot());
   }
 
   public Command defaultAuto() {

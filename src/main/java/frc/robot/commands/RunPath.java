@@ -22,7 +22,7 @@ public class RunPath extends Command {
     this.path = new Path(points);
     this.drivetrain = drivetrain;
     // TODO: Move to constants + tune
-    this.pidController = new MiniPID(0.1, 0.0, 0.0);
+    this.pidController = new MiniPID(6.5, 0.0, 0.2);
     this.pidController.setF(0);
 
     addRequirements(drivetrain);
@@ -34,7 +34,7 @@ public class RunPath extends Command {
   public void initialize() {
 
     // TODO: Put units on these
-    ConstraintsPair translationPair = new ConstraintsPair(10, 10);
+    ConstraintsPair translationPair = new ConstraintsPair(10, 1000);
     ConstraintsPair rotationPair = new ConstraintsPair(0.1, .5);
 
     this.pathfollower =
@@ -60,8 +60,10 @@ public class RunPath extends Command {
     Vec2d newTranslation =
         (new Vec2d(nextMovement.translation.x / 200, nextMovement.translation.y / 200));
     double rotation = nextMovement.rotation / 100; // TODO: De magic this number!!
-    SmartDashboard.putNumber("RunPath target rotation", rotation);
-    drivetrain.move(new RobotMovement(rotation, newTranslation), this.drivetrain.odometry.theta);
+
+    SmartDashboard.putString("next movement", newTranslation.toString());
+
+    drivetrain.move(new RobotMovement(-rotation, newTranslation), this.drivetrain.odometry.theta);
   }
 
   @Override
