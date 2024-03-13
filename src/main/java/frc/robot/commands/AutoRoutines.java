@@ -22,7 +22,7 @@ public final class AutoRoutines {
 
 
   public AutoRoutines(QuailDriveTrain driveTrain, IntakeShooter shooter) {
-    this.shootingPos.add(new Pose2d(-55,-230,0));
+    this.shootingPos.add(new Pose2d(-50,-230,0));
     this.driveTrain = driveTrain;
     this.intakeShooter = shooter;
 

@@ -9,6 +9,7 @@ import com.mineinjava.quail.util.geometry.Pose2d;
 import com.mineinjava.quail.util.geometry.Vec2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
 import frc.robot.subsystems.QuailDriveTrain;
 import java.util.ArrayList;
 
@@ -22,7 +23,8 @@ public class RunPath extends Command {
     this.path = new Path(points);
     this.drivetrain = drivetrain;
     // TODO: Move to constants + tune
-    this.pidController = new MiniPID(6.5, 0.0, 0.2);
+    this.pidController = new MiniPID(3, 0.0, 1.2);
+    this.pidController.setDeadband(Constants.ANGLE_PRECISION);
     this.pidController.setF(0);
 
     addRequirements(drivetrain);
@@ -34,8 +36,8 @@ public class RunPath extends Command {
   public void initialize() {
 
     // TODO: Put units on these
-    ConstraintsPair translationPair = new ConstraintsPair(10, 1000);
-    ConstraintsPair rotationPair = new ConstraintsPair(0.1, .5);
+    ConstraintsPair translationPair = new ConstraintsPair(80, 1000);
+    ConstraintsPair rotationPair = new ConstraintsPair(0.5, .5);
 
     this.pathfollower =
         new PathFollower(
@@ -44,10 +46,10 @@ public class RunPath extends Command {
             translationPair,
             rotationPair,
             this.pidController,
-            3,
-            4,
+            2,
+            2,
             1,
-            15);
+            20);
 
     this.path.currentPointIndex = 0;
     System.out.println("Initialized RunPath Command...");
