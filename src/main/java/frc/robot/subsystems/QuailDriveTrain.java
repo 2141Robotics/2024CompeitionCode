@@ -39,8 +39,7 @@ public class QuailDriveTrain extends SubsystemBase {
   public PathFollower pathFollower;
   public MiniPID pidcontroller;
 
-  private KalmanFilterLocalizer kalmanFilter =
-      new KalmanFilterLocalizer(new Vec2d(0, 0), Constants.LOOPTIME);
+  private KalmanFilterLocalizer kalmanFilter = new KalmanFilterLocalizer(new Vec2d(0, 0), Constants.LOOPTIME);
 
   private final GyroModule gyro = new GyroModule();
 
@@ -69,23 +68,21 @@ public class QuailDriveTrain extends SubsystemBase {
 
   public Pose2d shooterPosition() {
     if (DriverStation.getAlliance().get() == Alliance.Red) {
-      return new Pose2d(65,-211,0);
+      return new Pose2d(65, -211, 0);
     } else if (DriverStation.getAlliance().get() == Alliance.Blue) {
-      return new Pose2d(65,211,0);
+      return new Pose2d(65, 211, 0);
     }
-    return new Pose2d(0,0,0);
+    return new Pose2d(0, 0, 0);
   }
 
   public Pose2d ampPosition() {
     if (DriverStation.getAlliance().get() == Alliance.Red) {
-      return new Pose2d(65,-211,0);
+      return new Pose2d(65, -211, 0);
     } else if (DriverStation.getAlliance().get() == Alliance.Blue) {
-      return new Pose2d(65,211,0);
+      return new Pose2d(65, 211, 0);
     }
-    return new Pose2d(0,0,0);
+    return new Pose2d(0, 0, 0);
   }
-
-  
 
   public void resetModules() {
     for (QuailSwerveModule module : this.modules) {
@@ -94,7 +91,8 @@ public class QuailDriveTrain extends SubsystemBase {
   }
 
   /**
-   * Return the Quail swerve drive object. Deprecated: move to use quaildrivetrain w/ commands
+   * Return the Quail swerve drive object. Deprecated: move to use quaildrivetrain
+   * w/ commands
    *
    * @return the Quail swerve drive object
    */
@@ -165,10 +163,11 @@ public class QuailDriveTrain extends SubsystemBase {
   }
 
   /**
-   * Command: Move the drive train TODO: move control logic to here and just have quail do math
+   * Command: Move the drive train TODO: move control logic to here and just have
+   * quail do math
    * (This is a mirror of the QuailSwerveDrive.move() method)
    *
-   * @param movement the movement to make
+   * @param movement   the movement to make
    * @param gyroOffset the gyro offset
    * @return the command to move the drive train
    */
@@ -190,11 +189,10 @@ public class QuailDriveTrain extends SubsystemBase {
         velocity.translation.scale(Constants.LOOPTIME).rotate(this.gyro.getAngleDegrees(), true));
     this.odometry.setAngle(-this.gyro.getAngleRadians());
 
-    double[] pos =
-        NetworkTableInstance.getDefault()
-            .getTable("limelight")
-            .getEntry("botpose")
-            .getDoubleArray(new double[6]);
+    double[] pos = NetworkTableInstance.getDefault()
+        .getTable("limelight")
+        .getEntry("botpose")
+        .getDoubleArray(new double[6]);
     SmartDashboard.putNumberArray("Limelight Pos", pos);
     double LX = 0;
     double LY = 0;

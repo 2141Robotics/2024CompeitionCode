@@ -53,4 +53,7 @@ public class Constants {
   public static final double SHOOTER_SPIN_UP_TIME = 1;
   public static final double INTAKE_SHOOT_SPEED = 1;
   public static final double SHOOTER_SHOOT_TIME = 1;
+
+public static final double SHOOTER_FLUSH_SPEED = 1;
+public static final double INTAKE_FLUSH_SPEED = 0.6;
 }

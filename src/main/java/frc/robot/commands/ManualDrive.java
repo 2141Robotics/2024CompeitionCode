@@ -13,8 +13,7 @@ public class ManualDrive extends Command {
 
   private final QuailDriveTrain driveTrain;
 
-  private final AccelerationLimitedVector a_driveVector =
-      new AccelerationLimitedVector(1000); // 0.003);
+  private final AccelerationLimitedVector a_driveVector = new AccelerationLimitedVector(1000); // 0.003);
 
   public ManualDrive(CommandXboxController controller1, QuailDriveTrain driveTrain) {
     super();
@@ -40,15 +39,20 @@ public class ManualDrive extends Command {
     double rightX = primaryController.getRightX();
 
     double rightTrigger = primaryController.getRightTriggerAxis();
+    double leftTrigger = primaryController.getLeftTriggerAxis();
 
     Vec2d leftStickVector = new Vec2d(leftX, leftY);
     Vec2d rightStickVector = new Vec2d(rightX, rightY);
+    // TODO: CHECK LEFT TRIGGER CODE
 
-    double speedScale = 0.08 + (0.92 * rightTrigger);
+    double speedScale = 0.08 + (0.92 * (rightTrigger - (leftTrigger/4)));
+    if(speedScale < 0){
+      speedScale = 0;
+    }
 
     // UNKOWN USE
     // if (Math.abs(leftStickVector.x) < 0.1) {
-    //  rightX = Double.MIN_NORMAL;
+    // rightX = Double.MIN_NORMAL;
     // }
 
     if (leftStickVector.getLength() < Constants.deadZonePercent) {
