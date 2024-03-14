@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.AlignShooter;
@@ -109,7 +108,7 @@ public class RobotContainer {
         .onTrue(Commands.runOnce(() -> s_DriveTrain.resetGyro(), s_DriveTrain));
 
     m_driverController.x().whileTrue(this.m_autoRoutines.lineUpShooter());
-    
+
     // m_driverController.x().whileTrue(new AlignShooter(s_DriveTrain));
 
     m_SecondaryController.rightBumper().toggleOnTrue(new Intake(s_IntakeShooter));

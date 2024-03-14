@@ -149,12 +149,8 @@ public class IntakeShooter extends SubsystemBase {
         this.stopShooterMotorsCommand());
   }
 
-  // TODO Check all under this comment
-  public Command limitSwitchOverride(boolean override) {
-    return this.limitSwitchOverrideCommand(override);
-  }
 
-  private Command limitSwitchOverrideCommand(boolean override) {
+  public Command limitSwitchOverride(boolean override) {
     return this.runOnce(
         () -> {
           this.limitSwitchOverrideUpdate(override);
