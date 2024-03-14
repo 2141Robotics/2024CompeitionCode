@@ -11,7 +11,8 @@ import edu.wpi.first.wpilibj.AnalogEncoder;
 import frc.robot.Constants;
 
 /**
- * Container for one swerve module. Wraps two falcon500s: one for driving and one for steering.
+ * Container for one swerve module. Wraps two falcon500s: one for driving and
+ * one for steering.
  *
  * @author 2141 Spartonics
  */
@@ -26,7 +27,10 @@ public class QuailSwerveModule extends SwerveModuleBase {
   /** The can coder measuring the module's absolute rotaiton. */
   private final AnalogEncoder analogEncoder;
 
-  /** The can coder's rotational offset. This value must be manually set through phoenix tuner. */
+  /**
+   * The can coder's rotational offset. This value must be manually set through
+   * phoenix tuner.
+   */
   public final double analogEncoderID;
 
   public double analogEncoderOffset;
@@ -37,12 +41,13 @@ public class QuailSwerveModule extends SwerveModuleBase {
   public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput;
 
   /**
-   * @param driveMotor driving motor ID
-   * @param steeringMotor steering motor ID
-   * @param canCoder can coder ID
-   * @param rotationDirection the steering motor's rotational direction, usually perpendicular to
-   *     the center of the robot
-   * @param canCoderOffset the can coder's rotational offset
+   * @param driveMotor        driving motor ID
+   * @param steeringMotor     steering motor ID
+   * @param canCoder          can coder ID
+   * @param rotationDirection the steering motor's rotational direction, usually
+   *                          perpendicular to
+   *                          the center of the robot
+   * @param canCoderOffset    the can coder's rotational offset
    */
   public QuailSwerveModule(
       Vec2d position,
@@ -112,7 +117,8 @@ public class QuailSwerveModule extends SwerveModuleBase {
   }
 
   /**
-   * Returns the steering motor's angle in radians. Fetches the velocity in RPM from the motor and
+   * Returns the steering motor's angle in radians. Fetches the velocity in RPM
+   * from the motor and
    * converts it to radians per second.
    *
    * @return The steering motor's rotation in radians per second

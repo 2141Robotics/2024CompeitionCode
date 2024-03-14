@@ -11,7 +11,10 @@ import java.util.List;
  * @author 2141 Spartonics
  */
 public class QuailSwerveDrive extends SwerveDrive<QuailSwerveModule> {
-  /** A timer used to continually reset the motors. Prevents overshooting the rotation. */
+  /**
+   * A timer used to continually reset the motors. Prevents overshooting the
+   * rotation.
+   */
   private static int resetTimer = 0;
 
   /** The gryoscope used for rotation measurements. */
@@ -21,10 +24,10 @@ public class QuailSwerveDrive extends SwerveDrive<QuailSwerveModule> {
   private final List<QuailSwerveModule> modules;
 
   /**
-   * @param minSpeed minimum movement speed (0 to 1)
-   * @param maxSpeed maximum movement speed (0 to 1)
-   * @param maxRotation maximum rotational speed (0 to 1)
-   * @param gyroscope the swerve drive's gyroscope
+   * @param minSpeed           minimum movement speed (0 to 1)
+   * @param maxSpeed           maximum movement speed (0 to 1)
+   * @param maxRotation        maximum rotatssional speed (0 to 1)
+   * @param gyroscope          the swerve drive's gyroscope
    * @param QuailSwerveModules the swerve drive's wheel modules
    */
   public QuailSwerveDrive(GyroModule gyroModule, List<QuailSwerveModule> modules) {
@@ -44,7 +47,8 @@ public class QuailSwerveDrive extends SwerveDrive<QuailSwerveModule> {
 
   @Override
   public String toString() {
-    // The class will be represented as "SwerveDrive[Module1 = {}, Module2 = {}, ...]"
+    // The class will be represented as "SwerveDrive[Module1 = {}, Module2 = {},
+    // ...]"
     StringBuilder builder = new StringBuilder("SwerveDrive[");
 
     for (int i = 0; i < this.modules.size(); i++) {

@@ -39,17 +39,16 @@ public class RunPath extends Command {
     ConstraintsPair translationPair = new ConstraintsPair(80, 1000);
     ConstraintsPair rotationPair = new ConstraintsPair(0.5, .5);
 
-    this.pathfollower =
-        new PathFollower(
-            this.drivetrain.getOdometry(),
-            this.path,
-            translationPair,
-            rotationPair,
-            this.pidController,
-            2,
-            2,
-            1,
-            20);
+    this.pathfollower = new PathFollower(
+        this.drivetrain.getOdometry(),
+        this.path,
+        translationPair,
+        rotationPair,
+        this.pidController,
+        2,
+        2,
+        1,
+        20);
 
     this.path.currentPointIndex = 0;
     System.out.println("Initialized RunPath Command...");
@@ -59,8 +58,7 @@ public class RunPath extends Command {
   public void execute() {
     SmartDashboard.putNumber("RunPath INdex", this.path.currentPointIndex);
     RobotMovement nextMovement = pathfollower.calculateNextDriveMovement();
-    Vec2d newTranslation =
-        (new Vec2d(nextMovement.translation.x / 200, nextMovement.translation.y / 200));
+    Vec2d newTranslation = (new Vec2d(nextMovement.translation.x / 200, nextMovement.translation.y / 200));
     double rotation = nextMovement.rotation / 100; // TODO: De magic this number!!
 
     SmartDashboard.putString("next movement", newTranslation.toString());

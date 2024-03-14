@@ -3,9 +3,12 @@ package frc.robot.components;
 import com.kauailabs.navx.frc.AHRS;
 
 /**
- * Simple wrapper around the AHRS gryo class that makes it easier to use and pass around
+ * Simple wrapper around the AHRS gryo class that makes it easier to use and
+ * pass around
  *
- * <p>The goal is to make it easier to use the gyro in other classes and standardize the way we use
+ * <p>
+ * The goal is to make it easier to use the gyro in other classes and
+ * standardize the way we use
  * it
  */
 public class GyroModule {
@@ -17,7 +20,8 @@ public class GyroModule {
   }
 
   /**
-   * Get the gyro object (deprecated, use getAngleDegrees() or getAngleRadians() instead
+   * Get the gyro object (deprecated, use getAngleDegrees() or getAngleRadians()
+   * instead
    *
    * @return the gyro object
    */

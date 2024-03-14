@@ -26,6 +26,8 @@ public class IntakeShooter extends SubsystemBase {
   // Limit switch for the intake
   private DigitalInput intakeLimitSwitch = new DigitalInput(0);
 
+  private boolean overrideOn = false;
+
   public IntakeShooter() {
     // config shooter motors
     TalonFXConfiguration bothConfiguration = new TalonFXConfiguration();
@@ -56,7 +58,12 @@ public class IntakeShooter extends SubsystemBase {
   }
 
   public boolean hasNote() {
-    return !intakeLimitSwitch.get();
+    // TODO CHECK
+    boolean b = !intakeLimitSwitch.get();
+    if (overrideOn) {
+      b = false;
+    }
+    return b;
   }
 
   public void retractIntakeMotors() {
@@ -132,19 +139,54 @@ public class IntakeShooter extends SubsystemBase {
   }
 
   public Command shoot() {
-    /*
-     * i1.set(0.35);
-     * i2.set(0.35);
-     * s1.set(1);
-     * s2.set(1);
-     */
     System.out.println("SHOOTING");
     return Commands.sequence(this.retractIntakeMotorsCommand(), new WaitCommand(Constants.INTAKE_RETRACT_TIME),
-        this.stopIntakeMotorsCommand(), 
+        this.stopIntakeMotorsCommand(),
         this.startShooterMotorsCommand(),
-        new WaitCommand(Constants.SHOOTER_SPIN_UP_TIME), 
+        new WaitCommand(Constants.SHOOTER_SPIN_UP_TIME),
         this.intakeMotorShootCommand(),
-        new WaitCommand(Constants.SHOOTER_SHOOT_TIME), 
+        new WaitCommand(Constants.SHOOTER_SHOOT_TIME),
         this.stopShooterMotorsCommand());
+  }
+
+  // TODO Check all under this comment
+  public Command limitSwitchOverride(boolean override) {
+    return this.limitSwitchOverrideCommand(override);
+  }
+
+  private Command limitSwitchOverrideCommand(boolean override) {
+    return this.runOnce(
+        () -> {
+          this.limitSwitchOverrideUpdate(override);
+        });
+  }
+
+  private void limitSwitchOverrideUpdate(boolean override) {
+    this.overrideOn = override;
+  }
+
+  public Command flushBackward() {
+    return this.runOnce(
+        () -> {
+          this.flush(false);
+        });
+  }
+
+  public Command flushForward() {
+    return this.runOnce(
+        () -> {
+          this.flush(true);
+        });
+  }
+
+  private void flush(boolean forward) {
+    int inverted = 1;
+    if (!forward) {
+      inverted = -1;
+    }
+    i1.set(inverted * Constants.INTAKE_FLUSH_SPEED);
+    i2.set(inverted * Constants.INTAKE_FLUSH_SPEED);
+    s1.set(inverted * Constants.SHOOTER_FLUSH_SPEED);
+    s2.set(inverted * Constants.SHOOTER_FLUSH_SPEED);
   }
 }
