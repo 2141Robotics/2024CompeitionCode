@@ -168,6 +168,14 @@ public class QuailSwerveModule extends SwerveModuleBase {
         + "]";
   }
 
+  public void setDriveMotorBrake() {
+    this.drivingMotor.setIdleMode(IdleMode.kBrake);
+  }
+
+  public void setDriveMotorCoast() {
+    this.drivingMotor.setIdleMode(IdleMode.kCoast);
+  }
+
   /**
    * Create the telemetry for the swerve module.
    *

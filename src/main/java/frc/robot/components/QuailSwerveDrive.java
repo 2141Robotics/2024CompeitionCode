@@ -56,6 +56,20 @@ public class QuailSwerveDrive extends SwerveDrive<QuailSwerveModule> {
     return builder.toString();
   }
 
+  public void setBrake() {
+    this.modules.forEach(
+        (QuailSwerveModule m) -> {
+          m.setDriveMotorBrake();
+        });
+  }
+
+  public void setCoast() {
+    this.modules.forEach(
+        (QuailSwerveModule m) -> {
+          m.setDriveMotorCoast();
+        });
+  }
+
   /**
    * Fetches the current speeds of the swerve modules.
    *

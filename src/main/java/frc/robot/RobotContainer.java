@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import com.mineinjava.quail.util.geometry.Pose2d;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -12,16 +11,13 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.commands.AlignShooter;
 import frc.robot.commands.AutoRoutines;
 import frc.robot.commands.Intake;
 import frc.robot.commands.ManualClimb;
 import frc.robot.commands.ManualDrive;
-import frc.robot.commands.RunPath;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.IntakeShooter;
 import frc.robot.subsystems.QuailDriveTrain;
-import java.util.ArrayList;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -95,10 +91,11 @@ public class RobotContainer {
         .back()
         .onTrue(Commands.runOnce(() -> s_DriveTrain.resetGyro(), s_DriveTrain));
 
-
-
     m_driverController.x().whileTrue(this.m_autoRoutines.lineUpShooter());
-   // m_driverController.x().whileTrue(new AlignShooter(s_DriveTrain));
+    m_driverController.a().onTrue(this.s_DriveTrain.xlockModulesCommand());
+    m_driverController.b().onTrue(this.s_DriveTrain.setMotorCoastCommand());
+    m_driverController.b().onFalse(this.s_DriveTrain.setMotorBrakeCommand());
+    // m_driverController.x().whileTrue(new AlignShooter(s_DriveTrain));
 
     m_SecondaryController.rightBumper().toggleOnTrue(new Intake(s_IntakeShooter));
     m_SecondaryController.back().onTrue(s_Climber.zeroMotorsCommand());

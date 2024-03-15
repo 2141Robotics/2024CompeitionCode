@@ -69,23 +69,21 @@ public class QuailDriveTrain extends SubsystemBase {
 
   public Pose2d shooterPosition() {
     if (DriverStation.getAlliance().get() == Alliance.Red) {
-      return new Pose2d(65,-211,0);
+      return new Pose2d(65, -211, 0);
     } else if (DriverStation.getAlliance().get() == Alliance.Blue) {
-      return new Pose2d(65,211,0);
+      return new Pose2d(65, 211, 0);
     }
-    return new Pose2d(0,0,0);
+    return new Pose2d(0, 0, 0);
   }
 
   public Pose2d ampPosition() {
     if (DriverStation.getAlliance().get() == Alliance.Red) {
-      return new Pose2d(65,-211,0);
+      return new Pose2d(65, -211, 0);
     } else if (DriverStation.getAlliance().get() == Alliance.Blue) {
-      return new Pose2d(65,211,0);
+      return new Pose2d(65, 211, 0);
     }
-    return new Pose2d(0,0,0);
+    return new Pose2d(0, 0, 0);
   }
-
-  
 
   public void resetModules() {
     for (QuailSwerveModule module : this.modules) {
@@ -154,14 +152,14 @@ public class QuailDriveTrain extends SubsystemBase {
     return this.runOnce(
         () -> {
           this.resetModules();
-        });
+        }).ignoringDisable(true);
   }
 
   public Command resetGyroCommand() {
     return this.runOnce(
         () -> {
           this.resetGyro();
-        });
+        }).ignoringDisable(true);
   }
 
   /**
@@ -174,6 +172,27 @@ public class QuailDriveTrain extends SubsystemBase {
    */
   public void move(RobotMovement movement, double gyroOffset) {
     driveTrain.move(movement, gyroOffset);
+  }
+
+  public Command xlockModulesCommand() {
+    return this.runOnce(
+        () -> {
+          this.driveTrain.XLockModules();
+        });
+  }
+
+  public Command setMotorBrakeCommand() {
+    return this.runOnce(
+        () -> {
+          this.driveTrain.setBrake();
+        }).ignoringDisable(true);
+  }
+
+  public Command setMotorCoastCommand() {
+    return this.runOnce(
+        () -> {
+          this.driveTrain.setCoast();
+        }).ignoringDisable(true);
   }
 
   /////////////////////////////////////////////////////////////////////////////
@@ -206,7 +225,7 @@ public class QuailDriveTrain extends SubsystemBase {
       LATENCY = pos[6];
     }
 
-    if (DriverStation.getAlliance().get() == Alliance.Blue) {
+    if (DriverStation.getAlliance().orElse(null) == Alliance.Blue) {
       LY = -LY; // invert y
       LX = -LX;
     }

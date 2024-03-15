@@ -20,9 +20,12 @@ public final class AutoRoutines {
   private GenericEntry targetPoseHeading;
   ArrayList<Pose2d> shootingPos = new ArrayList<Pose2d>();
 
-
   public AutoRoutines(QuailDriveTrain driveTrain, IntakeShooter shooter) {
-    this.shootingPos.add(new Pose2d(-50,-230,0));
+    // ''this.shootingPos,add(new Pose2d(-50,-230,0)); // blue alliance // DON"T USE
+    // ''this.shootingPos,add(new Pose2d(50, -230, 0)); // red alliance // DONT USE
+
+    this.shootingPos.add(new Pose2d(-45, -225, 0)); // blue alliance //
+    // this.shootingPos.add(new Pose2d(45, -225, 0)); // red alliance
     this.driveTrain = driveTrain;
     this.intakeShooter = shooter;
 
@@ -35,12 +38,28 @@ public final class AutoRoutines {
     return Commands.parallel();
   }
 
-  public Command lineUpShooter(){
+  public Command lineUpShooter() {
     return new RunPath(this.driveTrain, shootingPos);
   }
 
-  public Command shootPreloadedNote(){
-    return Commands.sequence(this.driveTrain.resetGyroCommand(), this.driveTrain.resetModulesCommand(), lineUpShooter(), this.driveTrain.stopCommand(), new WaitCommand(0.3), this.intakeShooter.shoot());
+  public Command shootPreloadedNote() {
+    return Commands.sequence(
+        this.driveTrain.resetGyroCommand(),
+        this.driveTrain.resetModulesCommand(),
+        lineUpShooter(),
+        this.driveTrain.stopCommand(),
+        new WaitCommand(0.3),
+        this.intakeShooter.shoot());
+  }
+
+  public Command noVisionTaxi() {
+    ArrayList<Pose2d> points = new ArrayList<Pose2d>();
+    points.add(new Pose2d(0, 60, 0));
+
+    return Commands.sequence(
+        this.driveTrain.resetGyroCommand(),
+        this.driveTrain.resetModulesCommand(),
+        new RunPath(this.driveTrain, points));
   }
 
   public Command defaultAuto() {

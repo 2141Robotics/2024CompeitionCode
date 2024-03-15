@@ -29,6 +29,7 @@ public class IntakeShooter extends SubsystemBase {
   public IntakeShooter() {
     // config shooter motors
     TalonFXConfiguration bothConfiguration = new TalonFXConfiguration();
+    bothConfiguration.OpenLoopRamps.VoltageOpenLoopRampPeriod = Constants.SHOOTER_RAMP_RATE;
     s1.getConfigurator().apply(bothConfiguration);
     s2.getConfigurator().apply(bothConfiguration);
 
@@ -76,7 +77,7 @@ public class IntakeShooter extends SubsystemBase {
 
   public void startShooterMotors() {
     s1.setControl(new VoltageOut(Constants.SHOOTER_VOLTAGE, true, false, false, false));
-    s2.setControl(new DutyCycleOut(Constants.SHOOTER_VOLTAGE, true, false, false, false));
+    s2.setControl(new VoltageOut(Constants.SHOOTER_VOLTAGE, true, false, false, false));
   }
 
   public void intakeMotorShoot() {
@@ -97,9 +98,10 @@ public class IntakeShooter extends SubsystemBase {
   }
 
   public Command intakeMotorShootCommand() {
-    return this.runOnce(() -> {
-      this.intakeMotorShoot();
-    });
+    return this.runOnce(
+        () -> {
+          this.intakeMotorShoot();
+        });
   }
 
   public Command stopShooterMotorsCommand() {
@@ -139,12 +141,19 @@ public class IntakeShooter extends SubsystemBase {
      * s2.set(1);
      */
     System.out.println("SHOOTING");
-    return Commands.sequence(this.retractIntakeMotorsCommand(), new WaitCommand(Constants.INTAKE_RETRACT_TIME),
-        this.stopIntakeMotorsCommand(), 
+    return Commands.sequence(
+        this.retractIntakeMotorsCommand(),
+        new WaitCommand(Constants.INTAKE_RETRACT_TIME),
+        this.stopIntakeMotorsCommand(),
         this.startShooterMotorsCommand(),
-        new WaitCommand(Constants.SHOOTER_SPIN_UP_TIME), 
+        new WaitCommand(Constants.SHOOTER_SPIN_UP_TIME),
         this.intakeMotorShootCommand(),
-        new WaitCommand(Constants.SHOOTER_SHOOT_TIME), 
+        new WaitCommand(Constants.SHOOTER_SHOOT_TIME),
         this.stopShooterMotorsCommand());
+  }
+
+  @Override
+  public void periodic() {
+
   }
 }
