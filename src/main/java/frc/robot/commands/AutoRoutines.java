@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.Constants;
 import frc.robot.subsystems.IntakeShooter;
 import frc.robot.subsystems.QuailDriveTrain;
 import java.util.ArrayList;
@@ -46,6 +47,7 @@ public final class AutoRoutines {
     return Commands.sequence(
         this.driveTrain.resetGyroCommand(),
         this.driveTrain.resetModulesCommand(),
+        new WaitCommand(Constants.AUTO_WAIT_TIME),
         lineUpShooter(),
         this.driveTrain.stopCommand(),
         new WaitCommand(0.3),

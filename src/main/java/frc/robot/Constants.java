@@ -54,4 +54,5 @@ public class Constants {
   public static final double INTAKE_SHOOT_SPEED = 1;
   public static final double SHOOTER_SHOOT_TIME = 0.8;
   public static final double SHOOTER_RAMP_RATE = 1;
+  public static final double AUTO_WAIT_TIME = 1;
 }
